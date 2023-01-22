@@ -2,8 +2,6 @@ import 'dart:convert';
 
 import 'package:anime_api/widgets/row_item.dart';
 
-import '../widgets/filter_modal.dart';
-import '../widgets/sort_options.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -40,55 +38,10 @@ class _SearchScreenState extends State<SearchScreen> {
     print(fetchedData);
   }
 
-  // void orderByCallback(OrderBy order) {
-  //   Navigator.of(context).pop();
-  //   setState(() {
-  //     orderBy = order;
-  //   });
-  //   fetchData(_controller!.text);
-  //   return;
-  // }
-
-  // void orderingCallback(Ordering order) {
-  //   Navigator.of(context).pop();
-  //   setState(() {
-  //     ordering = order;
-  //   });
-  //   fetchData(_controller!.text);
-  //   return;
-  // }
-
-  // Widget buildFilterTab({
-  //   required FilterType filterType,
-  //   required IconData iconData,
-  //   required String title,
-  // }) {
-  //   return Flexible(
-  //     child: OutlinedButton.icon(
-  //       onPressed: () {
-  //         if (_focusNode!.hasFocus) _focusNode!.unfocus();
-  //         buildFilterOptions(
-  //           context: context,
-  //           filterType: filterType,
-  //         );
-  //       },
-  //       icon: Icon(iconData),
-  //       label: FittedBox(
-  //         child: Text(title),
-  //       ),
-  //       style: OutlinedButton.styleFrom(
-  //         foregroundColor: Colors.white,
-  //       ),
-  //     ),
-  //   );
-  // }
-
   @override
   void initState() {
     _controller = TextEditingController();
     _focusNode = FocusNode();
-    // orderBy = Provider.of<UserPreferences>(context, listen: false).orderBy;
-    // ordering = Provider.of<UserPreferences>(context, listen: false).ordering;
     super.initState();
   }
 
@@ -111,37 +64,6 @@ class _SearchScreenState extends State<SearchScreen> {
     return Scaffold(
         appBar: AppBar(
           title: const Text("Search"),
-          // actions: [
-          //   if (page > 0)
-          //     IconButton(
-          //       onPressed: () {
-          //         setState(() {
-          //           page = page - 1;
-          //         });
-          //         fetchData(_controller!.text);
-          //       },
-          //       icon: const Icon(Icons.arrow_upward_rounded),
-          //       tooltip: "Next Page",
-          //       key: const ValueKey("Down"),
-          //     ),
-          //   IconButton(
-          //     onPressed: () {
-          //       setState(() {
-          //         page = page + 1;
-          //       });
-          //       fetchData(_controller!.text);
-          //     },
-          //     icon: const Icon(Icons.arrow_downward_rounded),
-          //     tooltip: "Next Page",
-          //     key: const ValueKey("Up"),
-          //   ),
-          //   SortOptions(
-          //     orderByCallback: orderByCallback,
-          //     orderingCallback: orderingCallback,
-          //     curOrderBy: orderBy!,
-          //     curOrdering: ordering!,
-          //   )
-          // ],
         ),
         body: CustomScrollView(
           slivers: [
@@ -171,35 +93,6 @@ class _SearchScreenState extends State<SearchScreen> {
                     const SizedBox(
                       height: 5,
                     ),
-                    // SizedBox(
-                    //   height: 50,
-                    //   child: Flex(
-                    //     direction: Axis.horizontal,
-                    //     children: [
-                    //       buildFilterTab(
-                    //         filterType: FilterType.tag,
-                    //         iconData: Icons.sell_outlined,
-                    //         title: "Tags",
-                    //       ),
-                    //       const SizedBox(
-                    //         width: 5,
-                    //       ),
-                    //       buildFilterTab(
-                    //         filterType: FilterType.brand,
-                    //         iconData: Icons.copyright_outlined,
-                    //         title: "Brands",
-                    //       ),
-                    //       const SizedBox(
-                    //         width: 5,
-                    //       ),
-                    //       buildFilterTab(
-                    //         filterType: FilterType.blacklist,
-                    //         iconData: Icons.filter_list_rounded,
-                    //         title: "Blacklist",
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
                     const Divider(),
                     OutlinedButton.icon(
                       onPressed: () {
@@ -233,48 +126,19 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             if (fetchedData != null && isLoading == false)
               SliverGrid(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   mainAxisExtent: 250,
                 ),
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
                     final data = fetchedData!["results"][index];
-
-                    return SizedBox(
-                      child: Stack(
-                        children: [
-                          RowItem(
-                            title: data["title"],
-                            tag: data["id"],
-                            image: data["image"],
-                            id: data["id"],
-                            disabled: data["status"] == "Not yet aired",
-                          ),
-                          Positioned(
-                            top: 20,
-                            right: 4,
-                            child: FittedBox(
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  borderRadius: BorderRadius.horizontal(
-                                    left: Radius.circular(5),
-                                  ),
-                                  color: Colors.red,
-                                ),
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 5,
-                                  vertical: 3,
-                                ),
-                                child: Text(
-                                  data["type"],
-                                  style: Theme.of(context).textTheme.titleSmall,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    return SearchCard(
+                      title: data["title"],
+                      type: data["type"],
+                      image: data["image"],
+                      id: data["id"],
+                      disabled: data["status"] == "Not yet aired",
                     );
                   },
                   childCount: fetchedData!["results"].length,
@@ -283,26 +147,4 @@ class _SearchScreenState extends State<SearchScreen> {
           ],
         ));
   }
-
-  // Future<dynamic> buildFilterOptions({
-  //   required BuildContext context,
-  //   required FilterType filterType,
-  // }) {
-  //   return showModalBottomSheet(
-  //     context: context,
-  //     builder: (context) => FilterModal(
-  //       filterType: filterType,
-  //       fetchData: () {
-  //         Navigator.of(context).pop();
-  //         fetchData(_controller!.text);
-  //       },
-  //     ),
-  //     shape: const RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.only(
-  //         topLeft: Radius.circular(5),
-  //         topRight: Radius.circular(5),
-  //       ),
-  //     ),
-  //   );
-  // }
 }

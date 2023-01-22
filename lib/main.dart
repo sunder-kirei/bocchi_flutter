@@ -1,13 +1,7 @@
 import 'package:anime_api/screens/video_player_screen.dart';
 
 import '../providers/user_preferences.dart';
-import '../screens/browse_brand_screen.dart';
-import '../screens/browse_screen.dart';
-import '../screens/browse_tag_screen.dart';
-import '../screens/favourites_screen.dart';
-import '../screens/preferences_modal.dart';
 import '../screens/search_screen.dart';
-import '../screens/web_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -81,17 +75,7 @@ class MyApp extends StatelessWidget {
                     DetailsScreen.routeName: (context) => const DetailsScreen(),
                     VideoPlayerScreen.routeName: (context) =>
                         const VideoPlayerScreen(),
-                    // BrowseScreen.routeName: (context) => const BrowseScreen(),
-                    // WebView.routeName: (context) => WebView(),
-                    // BrowseTagScreen.routeName: (context) =>
-                    //     const BrowseTagScreen(),
                     SearchScreen.routeName: (context) => const SearchScreen(),
-                    // BrowseBrandScreen.routeName: (context) =>
-                    //     const BrowseBrandScreen(),
-                    // FavouritesScreen.routeName: (context) =>
-                    //     const FavouritesScreen(),
-                    // PreferencesModal.routeName: (context) =>
-                    //     const PreferencesModal(),
                   },
                 );
               },

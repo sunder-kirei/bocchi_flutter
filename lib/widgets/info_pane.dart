@@ -1,4 +1,3 @@
-import '../screens/browse_brand_screen.dart';
 import 'package:flutter/material.dart';
 
 class InfoPane extends StatelessWidget {

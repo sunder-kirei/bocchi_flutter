@@ -14,7 +14,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // floatingActionButton: const SearchButton(),
+      floatingActionButton: const SearchButton(),
       drawer: const CustomDrawer(),
       body: CustomScrollView(
         slivers: [

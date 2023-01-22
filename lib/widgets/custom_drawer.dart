@@ -1,10 +1,8 @@
 import 'package:anime_api/widgets/bocchi_rich_text.dart';
 
-import '../screens/favourites_screen.dart';
 import '../screens/preferences_modal.dart';
 import 'package:flutter/material.dart';
 
-import '../screens/browse_screen.dart';
 import '../screens/search_screen.dart';
 
 class CustomDrawer extends StatelessWidget {

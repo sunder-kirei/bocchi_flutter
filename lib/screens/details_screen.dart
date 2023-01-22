@@ -1,23 +1,15 @@
-import 'dart:convert';
-
 import 'package:anime_api/screens/video_player_screen.dart';
+import 'package:anime_api/widgets/custom_tile.dart';
 import 'package:anime_api/widgets/row_item.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:transparent_image/transparent_image.dart';
-import 'package:video_player/video_player.dart';
-
-import '../providers/user_preferences.dart';
-import '../screens/browse_tag_screen.dart';
-import '../screens/web_view.dart';
-import '../widgets/custom_player.dart';
-import '../widgets/info_pane.dart';
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
+import 'package:transparent_image/transparent_image.dart';
 
+import '../helpers/http_helper.dart';
 import '../widgets/bocchi_rich_text.dart';
 import '../widgets/hero_image.dart';
-import '../helpers/http_helper.dart';
-import 'package:provider/provider.dart';
+import '../widgets/info_pane.dart';
 
 class DetailsScreen extends StatefulWidget {
   const DetailsScreen({super.key});
@@ -53,42 +45,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
           fontSize: 20,
         ),
       ),
-      // floatingActionButton: fetchedData == null
-      //     ? null
-      //     : Consumer<UserPreferences>(
-      //         builder: (context, value, child) {
-      //           final data = {
-      //             "slug": (ModalRoute.of(context)?.settings.arguments
-      //                 as Map<String, dynamic>)["slug"],
-      //             "posterUrl": (ModalRoute.of(context)?.settings.arguments
-      //                 as Map<String, dynamic>)["poster"],
-      //             "coverUrl": (ModalRoute.of(context)?.settings.arguments
-      //                 as Map<String, dynamic>)["cover_url"],
-      //             "tag": (ModalRoute.of(context)?.settings.arguments
-      //                 as Map<String, dynamic>)["tag"],
-      //             //"title":fetchedData["hentai_video"]["name"],
-      //             "title": fetchedData["title"],
-      //           };
-      //           bool isFavourite = value.favourites.indexWhere(
-      //                     (element) => element["slug"] == data["slug"],
-      //                   ) ==
-      //                   -1
-      //               ? false
-      //               : true;
-      //           return FloatingActionButton(
-      //             onPressed: () {
-      //               value.toggleFavourites(data: data);
-      //             },
-      //             backgroundColor: Theme.of(context).colorScheme.onBackground,
-      //             child: Icon(
-      //               isFavourite
-      //                   ? Icons.favorite
-      //                   : Icons.favorite_border_outlined,
-      //               color: Colors.red,
-      //             ),
-      //           );
-      //         },
-      //       ),
       body: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
@@ -149,35 +105,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   height: 10,
                 ),
                 if (fetchedData != null) ...[
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: OutlinedButton.icon(
-                            icon: const Icon(Icons.watch_later_outlined),
-                            label: const Text("Watchlist"),
-                            onPressed: () {},
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor:
-                                  fetchedData!["status"] == "Ongoing"
-                                      ? Colors.greenAccent[400]
-                                      : Colors.redAccent,
-                            ),
-                            onPressed: () {},
-                            child: Text(fetchedData!["status"]),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  Buttons(fetchedData: fetchedData),
                   const Divider(
                     height: 10,
                   ),
@@ -247,66 +175,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width,
                       height: 100,
-                      child: Flex(
-                        key: ValueKey(data!["number"]),
-                        direction: Axis.horizontal,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          AspectRatio(
-                            aspectRatio: 16 / 9,
-                            child: Card(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(5),
-                                child: CachedNetworkImage(
-                                  imageUrl: data["image"],
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Flexible(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  data["airDate"] == null
-                                      ? Text(
-                                          "Episode ${data["number"]}",
-                                        )
-                                      : Text(
-                                          "E${data["number"]} \u2022 ${data["airDate"].toString().substring(0, 10)}",
-                                        ),
-                                  data["title"] != null
-                                      ? Text(
-                                          data["title"],
-                                          maxLines: 2,
-                                        )
-                                      : const Text(
-                                          "\n",
-                                        ),
-                                  data["description"] != null
-                                      ? Text(
-                                          data["description"],
-                                          maxLines: 2,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .labelMedium
-                                              ?.copyWith(
-                                                color: Colors.white60,
-                                              ),
-                                          overflow: TextOverflow.ellipsis,
-                                        )
-                                      : const Text(
-                                          "\n",
-                                        ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
+                      child: CustomTile(
+                        image: data["image"],
+                        episodeNumber: data["number"],
+                        airDate: data["airDate"],
+                        description: data["description"],
+                        key: ValueKey(data["number"]),
+                        title: data["title"],
                       ),
                     ),
                   );
@@ -398,6 +273,47 @@ class _DetailsScreenState extends State<DetailsScreen> {
           ]
         ],
       ),
+    );
+  }
+}
+
+class Buttons extends StatelessWidget {
+  const Buttons({
+    Key? key,
+    required this.fetchedData,
+  }) : super(key: key);
+
+  final Map<String, dynamic>? fetchedData;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: OutlinedButton.icon(
+              icon: const Icon(Icons.watch_later_outlined),
+              label: const Text("Watchlist"),
+              onPressed: () {},
+            ),
+          ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: fetchedData!["status"] == "Ongoing"
+                    ? Colors.greenAccent[400]
+                    : Colors.redAccent,
+              ),
+              onPressed: () {},
+              child: Text(fetchedData!["status"]),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

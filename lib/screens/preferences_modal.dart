@@ -1,5 +1,4 @@
 import '../providers/user_preferences.dart';
-import '../widgets/sort_options_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -85,15 +84,6 @@ class _PreferencesScreenState extends State<PreferencesModal> {
                         title: "360p",
                       ),
                     ],
-                  ),
-                ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: SortBuilder(
-                    orderByCallback: value.setOrderBy,
-                    orderingCallback: value.setOrdering,
-                    curOrderBy: value.orderBy,
-                    curOrdering: value.ordering,
                   ),
                 ),
               ],

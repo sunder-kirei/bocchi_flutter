@@ -1,5 +1,6 @@
 import 'package:anime_api/helpers/http_helper.dart';
 import 'package:anime_api/widgets/custom_player.dart';
+import 'package:anime_api/widgets/custom_tile.dart';
 import 'package:anime_api/widgets/hero_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -195,66 +196,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                           : null,
                       width: MediaQuery.of(context).size.width,
                       height: 100,
-                      child: Flex(
+                      child: CustomTile(
+                        image: data["image"],
+                        episodeNumber: data["number"],
+                        airDate: data["airDate"],
+                        description: data["description"],
                         key: ValueKey(data["number"]),
-                        direction: Axis.horizontal,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          AspectRatio(
-                            aspectRatio: 16 / 9,
-                            child: Card(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(5),
-                                child: CachedNetworkImage(
-                                  imageUrl: data["image"],
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Flexible(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  data["airDate"] == null
-                                      ? Text(
-                                          "Episode ${data["number"]}",
-                                        )
-                                      : Text(
-                                          "E${data["number"]} \u2022 ${data["airDate"].toString().substring(0, 10)}",
-                                        ),
-                                  data["title"] != null
-                                      ? Text(
-                                          data["title"],
-                                          maxLines: 2,
-                                        )
-                                      : const Text(
-                                          "\n",
-                                        ),
-                                  data["description"] != null
-                                      ? Text(
-                                          data["description"],
-                                          maxLines: 2,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .labelMedium
-                                              ?.copyWith(
-                                                color: Colors.white60,
-                                              ),
-                                          overflow: TextOverflow.ellipsis,
-                                        )
-                                      : const Text(
-                                          "\n",
-                                        ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
+                        title: data["title"],
                       ),
                     ),
                   );
