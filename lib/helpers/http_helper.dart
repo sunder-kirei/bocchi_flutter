@@ -34,7 +34,9 @@ class HttpHelper {
   static Future<Map<String, dynamic>> searchApi({
     required String query,
   }) async {
-    final url = Uri.https(baseUrl, '"/meta/anilist/$query"');
+    final url = Uri.https(baseUrl, "/meta/anilist/advanced-search", {
+      "query": query,
+    });
     final response = await http.get(url);
     return json.decode(response.body) as Map<String, dynamic>;
   }

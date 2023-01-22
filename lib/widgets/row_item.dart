@@ -26,19 +26,6 @@ class RowItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(5),
         child: GridTile(
           footer: GridTileBar(
-            // trailing: IconButton(
-            //   icon: Icon(
-            //     isFavourite
-            //         ? Icons.favorite_rounded
-            //         : Icons.favorite_outline_rounded,
-            //     color: isFavourite ? Colors.red : null,
-            //   ),
-            //   onPressed: () {
-            //     value.toggleFavourites(
-            //       data: data,
-            //     );
-            //   },
-            // ),
             title: Text(
               title["romaji"],
               maxLines: 2,

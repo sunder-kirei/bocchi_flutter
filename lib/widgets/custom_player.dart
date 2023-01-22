@@ -61,14 +61,24 @@ class _CustomPlayerState extends State<CustomPlayer> {
     setState(() {
       quality = index;
     });
-    final url = Uri.parse(widget.streams[0]["url"]);
-    print(url);
+    var streams = widget.streams;
+
+    streams = streams.map((item) {
+      return {
+        ...item,
+        "url":
+            "${item["url"].toString().substring(0, 15)}files${item["url"].toString().substring(20)}",
+      };
+    }).toList();
+
+    final url = Uri.parse(streams[0]["url"]);
+
     _videoPlayerController = VideoPlayerController.contentUri(url);
 
     await _videoPlayerController!.initialize();
 
     _controller = customChewieController(
-      streams: widget.streams,
+      streams: streams,
       position: position,
     );
 
@@ -82,18 +92,6 @@ class _CustomPlayerState extends State<CustomPlayer> {
     required List<dynamic> streams,
   }) {
     return ChewieController(
-      // subtitle: Subtitles(
-      //   [
-      //     Subtitle(
-      //       text: widget.subtitles[0],
-      //       index: 0,
-      //       start: Duration.zero,
-      //       end: Duration(
-      //         minutes: 20,
-      //       ),
-      //     ),
-      //   ],
-      // ),
       videoPlayerController: _videoPlayerController!,
       showControlsOnInitialize: true,
       deviceOrientationsAfterFullScreen: [

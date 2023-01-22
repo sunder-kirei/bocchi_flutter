@@ -1,5 +1,5 @@
 import '../widgets/custom_drawer.dart';
-import '../widgets/hanime_rich_text.dart';
+import '../widgets/bocchi_rich_text.dart';
 import '../widgets/search_button.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +15,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       // floatingActionButton: const SearchButton(),
-      // drawer: const CustomDrawer(),
+      drawer: const CustomDrawer(),
       body: CustomScrollView(
         slivers: [
           CustomAppBar(
@@ -24,7 +24,7 @@ class HomeScreen extends StatelessWidget {
               fit: BoxFit.cover,
               alignment: Alignment.centerRight,
             ),
-            title: const HanimeRichText(fontSize: 20),
+            title: const BocchiRichText(fontSize: 20),
           ),
           SliverToBoxAdapter(
             child: Padding(

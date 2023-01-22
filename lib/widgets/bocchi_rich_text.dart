@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 
-class HanimeRichText extends StatelessWidget {
+class BocchiRichText extends StatelessWidget {
   final double fontSize;
-  const HanimeRichText({super.key, required this.fontSize});
+  const BocchiRichText({super.key, required this.fontSize});
 
   @override
   Widget build(BuildContext context) {
     return RichText(
       text: TextSpan(
-        text: "hanime",
-        children: const [
+        text: "bocchi",
+        children: [
           TextSpan(
             text: ".",
             style: TextStyle(
-              color: Color.fromRGBO(243, 198, 105, 1),
+              color: Colors.pinkAccent as Color,
             ),
           ),
           TextSpan(text: "tv"),

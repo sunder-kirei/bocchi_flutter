@@ -14,7 +14,7 @@ import '../widgets/info_pane.dart';
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
 
-import '../widgets/hanime_rich_text.dart';
+import '../widgets/bocchi_rich_text.dart';
 import '../widgets/hero_image.dart';
 import '../helpers/http_helper.dart';
 import 'package:provider/provider.dart';
@@ -49,7 +49,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const HanimeRichText(
+        title: const BocchiRichText(
           fontSize: 20,
         ),
       ),
@@ -234,18 +234,21 @@ class _DetailsScreenState extends State<DetailsScreen> {
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   final data = fetchedData!["episodes"][index];
-                  return GestureDetector(
+                  return InkWell(
                     onTap: () => Navigator.of(context).pushNamed(
                       VideoPlayerScreen.routeName,
                       arguments: {
                         "id": fetchedData!["id"],
+                        "image": fetchedData!["image"],
                         "episode": data!["number"],
+                        "details": fetchedData!["episodes"],
                       },
                     ),
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width,
                       height: 100,
                       child: Flex(
+                        key: ValueKey(data!["number"]),
                         direction: Axis.horizontal,
                         mainAxisSize: MainAxisSize.max,
                         children: [

@@ -85,7 +85,7 @@ class MyApp extends StatelessWidget {
                     // WebView.routeName: (context) => WebView(),
                     // BrowseTagScreen.routeName: (context) =>
                     //     const BrowseTagScreen(),
-                    // SearchScreen.routeName: (context) => const SearchScreen(),
+                    SearchScreen.routeName: (context) => const SearchScreen(),
                     // BrowseBrandScreen.routeName: (context) =>
                     //     const BrowseBrandScreen(),
                     // FavouritesScreen.routeName: (context) =>
