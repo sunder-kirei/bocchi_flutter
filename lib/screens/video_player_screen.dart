@@ -19,7 +19,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   List<dynamic>? videoSources;
   bool isLoading = true;
 
-  Future<void> getStreamInfo({Stream provider = Stream.gogoanime}) async {
+  Future<void> getStreamInfo({required Stream provider}) async {
     final response = await HttpHelper.getInfo(
       malID: int.parse(
         (ModalRoute.of(context)!.settings.arguments
@@ -34,20 +34,22 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     await getEpisode(
       episode: (ModalRoute.of(context)!.settings.arguments
           as Map<String, dynamic>)["episode"],
+      provider: provider,
     );
   }
 
-  Future<void> getEpisode({int episode = 1}) async {
+  Future<void> getEpisode({int episode = 1, required Stream provider}) async {
     setState(() {
       isLoading = true;
     });
     final response = await HttpHelper.getVideo(
       episodeID: fetchedData!["episodes"][episode - 1]["id"],
-      provider: Stream.gogoanime,
+      provider: provider,
     );
+    print(response["sources"]);
     setState(() {
-      isLoading = false;
       videoSources = response["sources"];
+      isLoading = false;
     });
   }
 
@@ -61,7 +63,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   @override
   void didChangeDependencies() {
-    getStreamInfo();
+    getStreamInfo(provider: Stream.gogoanime);
     super.didChangeDependencies();
   }
 
@@ -77,16 +79,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               children: [
                 AspectRatio(
                   aspectRatio: 16 / 9,
-                  child: isLoading && videoSources == null
-                      ? Container(
-                          color: Theme.of(context).colorScheme.surface,
+                  child: isLoading == false && videoSources != null
+                      ? CustomPlayer(streams: videoSources!)
+                      : Container(
+                          // color: Theme.of(context).colorScheme.surface,
+                          color: Colors.blue,
                           child: Center(
                             child: CircularProgressIndicator(
                               color: Theme.of(context).colorScheme.onBackground,
                             ),
                           ),
-                        )
-                      : CustomPlayer(streams: videoSources!),
+                        ),
                 ),
                 if (fetchedData != null) ...[
                   Container(
@@ -166,7 +169,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     final data = fetchedData!["episodes"][index];
                     return InkWell(
                       onTap: () {
-                        getEpisode(episode: data["number"]);
+                        getEpisode(
+                          episode: data["number"],
+                          provider: Stream.gogoanime,
+                        );
                       },
                       child: SizedBox(
                         width: MediaQuery.of(context).size.width,

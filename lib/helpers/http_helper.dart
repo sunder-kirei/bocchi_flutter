@@ -52,21 +52,20 @@ class HttpHelper {
 
   static Future<Map<String, dynamic>> getVideo({
     required String episodeID,
-    Stream provider = Stream.animepahe,
+    Stream provider = Stream.gogoanime,
   }) async {
     final url = Uri.https(baseUrl, "/meta/anilist/watch/$episodeID", {
-      "provider": Stream.animepahe.name,
+      "provider": provider.name,
     });
     final response = await http.get(url);
     return json.decode(response.body) as Map<String, dynamic>;
   }
 
-  static Future<Map<String, dynamic>> getLanding({
-    required GetLanding landing,
-  }) async {
+  static Future<Map<String, dynamic>> getLanding(
+      {required GetLanding landing, Stream provider = Stream.gogoanime}) async {
     final identifier = landing.name.split('_').join('-').toString();
     final url = Uri.https(baseUrl, "/meta/anilist/$identifier", {
-      "provider": Stream.animepahe.name,
+      "provider": provider.name,
     });
     final response = await http.get(url);
     return json.decode(response.body);

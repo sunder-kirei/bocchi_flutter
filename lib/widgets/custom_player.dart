@@ -27,7 +27,7 @@ class _CustomPlayerState extends State<CustomPlayer> {
   @override
   void initState() {
     initPlayer(
-      index: Provider.of<UserPreferences>(context, listen: false).quality.index,
+      index: 0,
     );
     super.initState();
   }
@@ -53,20 +53,18 @@ class _CustomPlayerState extends State<CustomPlayer> {
     Duration position = Duration.zero,
     required int index,
   }) async {
-    final streams = widget.streams;
-
     setState(() {
       quality = index;
     });
 
     _videoPlayerController = VideoPlayerController.network(
-      streams[quality!]["url"],
+      widget.streams[0]["url"].toString(),
     );
 
     await _videoPlayerController!.initialize();
 
     _controller = customChewieController(
-      streams: streams,
+      streams: widget.streams,
       position: position,
     );
 

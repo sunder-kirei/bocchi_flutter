@@ -34,7 +34,9 @@ class RowSliver extends StatelessWidget {
                 id: fetchedData[index]["id"],
                 image: fetchedData[index]["image"],
                 title: fetchedData[index]["title"],
-                tag: option.name + fetchedData[index]["id"].toString(),
+                tag: option.name +
+                    fetchedData[index]["id"].toString() +
+                    fetchedData[index]["episodeId"].toString(),
               ),
               itemCount: fetchedData.length,
               scrollDirection: Axis.horizontal,
