@@ -1,4 +1,5 @@
 import 'package:anime_api/helpers/http_helper.dart';
+import 'package:anime_api/widgets/custom_player.dart';
 import 'package:anime_api/widgets/hero_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -13,11 +14,12 @@ class VideoPlayerScreen extends StatefulWidget {
 }
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
+  ScrollController _controller = ScrollController();
   Map<String, dynamic>? fetchedData;
   List<dynamic>? videoSources;
   bool isLoading = true;
 
-  Future<void> getStreamInfo({Stream provider = Stream.animepahe}) async {
+  Future<void> getStreamInfo({Stream provider = Stream.gogoanime}) async {
     final response = await HttpHelper.getInfo(
       malID: int.parse(
         (ModalRoute.of(context)!.settings.arguments
@@ -28,6 +30,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     setState(() {
       fetchedData = response;
     });
+
     await getEpisode(
       episode: (ModalRoute.of(context)!.settings.arguments
           as Map<String, dynamic>)["episode"],
@@ -40,6 +43,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     });
     final response = await HttpHelper.getVideo(
       episodeID: fetchedData!["episodes"][episode - 1]["id"],
+      provider: Stream.gogoanime,
     );
     setState(() {
       isLoading = false;
@@ -47,10 +51,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     });
   }
 
+  void scrollToEpisode({int episode = 1}) {
+    _controller.animateTo(
+      100 * (episode - 1),
+      duration: Duration(milliseconds: 500),
+      curve: Curves.easeOut,
+    );
+  }
+
   @override
   void didChangeDependencies() {
     getStreamInfo();
-
     super.didChangeDependencies();
   }
 
@@ -58,85 +69,101 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SafeArea(
-          child: Column(
-            children: [
-              AspectRatio(
-                aspectRatio: 16 / 9,
-                child: isLoading
-                    ? Container(
-                        color: Theme.of(context).colorScheme.surface,
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            color: Theme.of(context).colorScheme.onBackground,
+        child: Flex(
+          direction: Axis.vertical,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              children: [
+                AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: isLoading && videoSources == null
+                      ? Container(
+                          color: Theme.of(context).colorScheme.surface,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: Theme.of(context).colorScheme.onBackground,
+                            ),
+                          ),
+                        )
+                      : CustomPlayer(streams: videoSources!),
+                ),
+                if (fetchedData != null) ...[
+                  Container(
+                    padding: const EdgeInsets.all(8.0),
+                    height: 140,
+                    child: Flex(
+                      direction: Axis.horizontal,
+                      children: [
+                        HeroImage(
+                          imageUrl: fetchedData!["image"],
+                          tag: fetchedData!["id"],
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Flexible(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                "Currently Watching",
+                                style: Theme.of(context).textTheme.caption,
+                              ),
+                              SizedBox(
+                                height: 3,
+                              ),
+                              Text(
+                                fetchedData!["title"]["romaji"],
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                "Episode",
+                                style: Theme.of(context).textTheme.caption,
+                              ),
+                              SizedBox(
+                                height: 3,
+                              ),
+                              Text(
+                                (ModalRoute.of(context)!.settings.arguments
+                                        as Map<String, dynamic>)["episode"]
+                                    .toString(),
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                            ],
                           ),
                         ),
-                      )
-                    : Container(
-                        color: Theme.of(context).colorScheme.surface,
-                      ),
-              ),
-              if (fetchedData != null) ...[
-                Container(
-                  padding: const EdgeInsets.all(8.0),
-                  height: 140,
-                  child: Flex(
-                    direction: Axis.horizontal,
-                    children: [
-                      HeroImage(
-                        imageUrl: fetchedData!["image"],
-                        tag: fetchedData!["id"],
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Flexible(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              "Currently Watching",
-                              style: Theme.of(context).textTheme.caption,
-                            ),
-                            SizedBox(
-                              height: 3,
-                            ),
-                            Text(
-                              fetchedData!["title"]["romaji"],
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                              "Episode",
-                              style: Theme.of(context).textTheme.caption,
-                            ),
-                            SizedBox(
-                              height: 3,
-                            ),
-                            Text(
-                              (ModalRoute.of(context)!.settings.arguments
-                                      as Map<String, dynamic>)["episode"]
-                                  .toString(),
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
+                  Divider(),
+                ],
+              ],
+            ),
+            if (fetchedData != null) ...[
+              Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Text(
+                  "Up Next",
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
-                Divider(),
-                ListView.builder(
+              ),
+              SizedBox(
+                height: 6,
+              ),
+              Flexible(
+                child: ListView.builder(
+                  controller: _controller,
                   itemBuilder: (context, index) {
                     final data = fetchedData!["episodes"][index];
-
                     return InkWell(
                       onTap: () {
                         getEpisode(episode: data["number"]);
@@ -209,9 +236,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   },
                   itemCount: fetchedData!["episodes"].length,
                 ),
-              ]
+              ),
             ],
-          ),
+          ],
         ),
       ),
     );

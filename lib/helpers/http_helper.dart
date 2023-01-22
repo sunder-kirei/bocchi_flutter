@@ -52,6 +52,7 @@ class HttpHelper {
 
   static Future<Map<String, dynamic>> getVideo({
     required String episodeID,
+    Stream provider = Stream.animepahe,
   }) async {
     final url = Uri.https(baseUrl, "/meta/anilist/watch/$episodeID", {
       "provider": Stream.animepahe.name,
