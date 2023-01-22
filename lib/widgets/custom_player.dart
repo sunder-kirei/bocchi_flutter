@@ -11,7 +11,12 @@ import 'package:video_player/video_player.dart';
 
 class CustomPlayer extends StatefulWidget {
   final List<dynamic> streams;
-  const CustomPlayer({super.key, required this.streams});
+  // final List<dynamic> subtitles;
+  const CustomPlayer({
+    super.key,
+    required this.streams,
+    // required this.subtitles,
+  });
 
   @override
   State<CustomPlayer> createState() => _CustomPlayerState();
@@ -56,10 +61,9 @@ class _CustomPlayerState extends State<CustomPlayer> {
     setState(() {
       quality = index;
     });
-
-    _videoPlayerController = VideoPlayerController.network(
-      widget.streams[0]["url"].toString(),
-    );
+    final url = Uri.parse(widget.streams[0]["url"]);
+    print(url);
+    _videoPlayerController = VideoPlayerController.contentUri(url);
 
     await _videoPlayerController!.initialize();
 
@@ -78,6 +82,18 @@ class _CustomPlayerState extends State<CustomPlayer> {
     required List<dynamic> streams,
   }) {
     return ChewieController(
+      // subtitle: Subtitles(
+      //   [
+      //     Subtitle(
+      //       text: widget.subtitles[0],
+      //       index: 0,
+      //       start: Duration.zero,
+      //       end: Duration(
+      //         minutes: 20,
+      //       ),
+      //     ),
+      //   ],
+      // ),
       videoPlayerController: _videoPlayerController!,
       showControlsOnInitialize: true,
       deviceOrientationsAfterFullScreen: [

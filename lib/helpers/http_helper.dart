@@ -61,8 +61,10 @@ class HttpHelper {
     return json.decode(response.body) as Map<String, dynamic>;
   }
 
-  static Future<Map<String, dynamic>> getLanding(
-      {required GetLanding landing, Stream provider = Stream.gogoanime}) async {
+  static Future<Map<String, dynamic>> getLanding({
+    required GetLanding landing,
+    Stream provider = Stream.animepahe,
+  }) async {
     final identifier = landing.name.split('_').join('-').toString();
     final url = Uri.https(baseUrl, "/meta/anilist/$identifier", {
       "provider": provider.name,

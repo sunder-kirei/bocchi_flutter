@@ -17,6 +17,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   ScrollController _controller = ScrollController();
   Map<String, dynamic>? fetchedData;
   List<dynamic>? videoSources;
+  // List<dynamic>? subtitles;
   bool isLoading = true;
 
   Future<void> getStreamInfo({required Stream provider}) async {
@@ -49,6 +50,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     print(response["sources"]);
     setState(() {
       videoSources = response["sources"];
+      // subtitles = response["subtitles"];
       isLoading = false;
     });
   }
@@ -63,7 +65,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   @override
   void didChangeDependencies() {
-    getStreamInfo(provider: Stream.gogoanime);
+    getStreamInfo(provider: Stream.animepahe);
     super.didChangeDependencies();
   }
 
@@ -80,7 +82,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                 AspectRatio(
                   aspectRatio: 16 / 9,
                   child: isLoading == false && videoSources != null
-                      ? CustomPlayer(streams: videoSources!)
+                      ? CustomPlayer(
+                          streams: videoSources!,
+                          // subtitles: subtitles!,
+                        )
                       : Container(
                           // color: Theme.of(context).colorScheme.surface,
                           color: Colors.blue,
