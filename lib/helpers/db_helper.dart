@@ -2,14 +2,14 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class DBHelper {
-  static const tableName = "favourites";
+  static const tableName = "watchlist";
 
   static Future<Database> openDB() async {
     final path = join(await getDatabasesPath(), "user.db");
     final sql = await openDatabase(
       path,
       onCreate: (db, version) async => await db.execute(
-        "CREATE TABLE $tableName (slug TEXT PRIMARY KEY,title TEXT, coverUrl TEXT, posterUrl TEXT, tag TEXT)",
+        "CREATE TABLE $tableName (id TEXT PRIMARY KEY, romaji TEXT, image TEXT)",
       ),
       version: 1,
     );
@@ -23,34 +23,42 @@ class DBHelper {
   }
 
   static Future<List<Map<String, dynamic>>> query({
-    required String slug,
+    required String id,
   }) async {
     final sql = await openDB();
     final data = await sql.query(
       tableName,
       distinct: true,
-      where: "slug = ?",
-      whereArgs: [slug],
+      where: "id = ?",
+      whereArgs: [id],
     );
     return data;
   }
 
-  static Future<int> insert({required Map<String, dynamic> data}) async {
+  static Future<int> insert({
+    required String itemId,
+    required String titleRomaji,
+    required String image,
+  }) async {
     final sql = await openDB();
     final id = await sql.insert(
       tableName,
-      data,
+      {
+        "id": itemId,
+        "romaji": titleRomaji,
+        "image": image,
+      },
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
     return id;
   }
 
-  static dynamic delete({required Map<String, dynamic> data}) async {
+  static dynamic delete({required String itemId}) async {
     final sql = await openDB();
     final id = await sql.delete(
       tableName,
-      where: "slug = ?",
-      whereArgs: [data["slug"]],
+      where: "id = ?",
+      whereArgs: [itemId],
     );
     return id;
   }

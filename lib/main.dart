@@ -26,10 +26,10 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
     return ChangeNotifierProvider(
-        create: (context) => UserPreferences(),
+        create: (context) => Watchlist(),
         builder: (context, _) => FutureBuilder(
-              future: Provider.of<UserPreferences>(context, listen: false)
-                  .fetchPreferences(),
+              future: Provider.of<Watchlist>(context, listen: false)
+                  .fetchWatchlist(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   FlutterNativeSplash.remove();

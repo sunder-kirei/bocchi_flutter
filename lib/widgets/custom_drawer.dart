@@ -75,24 +75,24 @@ class CustomDrawer extends StatelessWidget {
                   ),
                   const Spacer(),
                   const Divider(),
-                  ListTile(
-                    style: ListTileStyle.drawer,
-                    leading: const Icon(Icons.settings),
-                    title: const Text("Preferences"),
-                    onTap: () {
-                      showModalBottomSheet(
-                        context: context,
-                        builder: (context) => const PreferencesModal(),
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(5),
-                            topRight: Radius.circular(5),
-                          ),
-                        ),
-                      );
-                      Scaffold.of(context).closeDrawer();
-                    },
-                  ),
+                  // ListTile(
+                  //   style: ListTileStyle.drawer,
+                  //   leading: const Icon(Icons.settings),
+                  //   title: const Text("Preferences"),
+                  //   onTap: () {
+                  //     showModalBottomSheet(
+                  //       context: context,
+                  //       builder: (context) => const PreferencesModal(),
+                  //       shape: const RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.only(
+                  //           topLeft: Radius.circular(5),
+                  //           topRight: Radius.circular(5),
+                  //         ),
+                  //       ),
+                  //     );
+                  //     Scaffold.of(context).closeDrawer();
+                  //   },
+                  // ),
                   const ListTile(
                     style: ListTileStyle.drawer,
                     leading: Icon(Icons.help_rounded),

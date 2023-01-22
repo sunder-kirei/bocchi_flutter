@@ -1,5 +1,9 @@
+import 'package:anime_api/providers/user_preferences.dart';
+import 'package:provider/provider.dart';
+
 import '../widgets/custom_drawer.dart';
 import '../widgets/bocchi_rich_text.dart';
+import '../widgets/row_item.dart';
 import '../widgets/search_button.dart';
 import 'package:flutter/material.dart';
 
@@ -25,6 +29,41 @@ class HomeScreen extends StatelessWidget {
               alignment: Alignment.centerRight,
             ),
             title: const BocchiRichText(fontSize: 20),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.only(
+                left: 5.0,
+                top: 10,
+                bottom: 5,
+              ),
+              child: Text(
+                "Your Watchlist",
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: 250,
+              child: ListView.builder(
+                itemBuilder: (context, index) {
+                  final data =
+                      Provider.of<Watchlist>(context).getWatchlist[index];
+                  return RowItem(
+                    id: data["id"],
+                    image: data["image"],
+                    title: {
+                      "romaji": data["romaji"],
+                    },
+                    tag: "watchlist${data["id"]}",
+                  );
+                },
+                itemCount: Provider.of<Watchlist>(context).getWatchlist.length,
+                scrollDirection: Axis.horizontal,
+                itemExtent: 170,
+              ),
+            ),
           ),
           SliverToBoxAdapter(
             child: Padding(

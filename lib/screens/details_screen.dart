@@ -1,9 +1,12 @@
+import 'package:anime_api/helpers/db_helper.dart';
+import 'package:anime_api/providers/user_preferences.dart';
 import 'package:anime_api/screens/video_player_screen.dart';
 import 'package:anime_api/widgets/custom_tile.dart';
 import 'package:anime_api/widgets/row_item.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
+import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../helpers/http_helper.dart';
@@ -344,7 +347,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             ),
                           );
                         },
-                        itemCount: fetchedData!["relations"].length,
+                        itemCount: fetchedData!["recommendations"].length,
                       ),
                     ),
                   ],
@@ -368,15 +371,36 @@ class Buttons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isPresent = !(Provider.of<Watchlist>(context).getWatchlist.indexWhere(
+              (element) => element["id"] == fetchedData!["id"],
+            ) ==
+        -1);
     return Row(
       children: [
         Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5),
             child: OutlinedButton.icon(
-              icon: const Icon(Icons.watch_later_outlined),
-              label: const Text("Watchlist"),
-              onPressed: () {},
+              icon: isPresent
+                  ? Icon(Icons.done)
+                  : Icon(Icons.watch_later_outlined),
+              label: isPresent
+                  ? const Text("On Watchlist")
+                  : const Text("Watchlist"),
+              onPressed: () async {
+                await Provider.of<Watchlist>(
+                  context,
+                  listen: false,
+                ).addToWatchlist(
+                  id: fetchedData!["id"],
+                  titleRomaji: fetchedData!["title"]["romaji"],
+                  image: fetchedData!["image"],
+                );
+                print(Provider.of<Watchlist>(
+                  context,
+                  listen: false,
+                ).getWatchlist);
+              },
             ),
           ),
         ),

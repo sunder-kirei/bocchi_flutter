@@ -5,6 +5,7 @@ import '../helpers/http_helper.dart';
 
 class RowSliver extends StatelessWidget {
   final GetLanding option;
+
   const RowSliver({super.key, required this.option});
 
   @override
