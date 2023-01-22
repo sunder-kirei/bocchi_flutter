@@ -27,6 +27,8 @@ class InfoPane extends StatelessWidget {
         ),
         Text(
           title["romaji"],
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
           style: Theme.of(context).textTheme.titleSmall,
         ),
         if (synonyms.isNotEmpty)
@@ -34,9 +36,11 @@ class InfoPane extends StatelessWidget {
             "Alternate Title",
             style: Theme.of(context).textTheme.caption,
           ),
-        if (synonyms.isNotEmpty)
+        if (synonyms.isNotEmpty || title["english"] != null)
           Text(
-            synonyms[0],
+            title["english"] ?? synonyms[0],
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.titleSmall,
           ),
         Text(

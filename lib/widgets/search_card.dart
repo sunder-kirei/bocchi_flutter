@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'row_item.dart';
 
 class SearchCard extends StatelessWidget {
-  // final dynamic data;
+  final VoidCallback callback;
   final String image;
   final String id;
   final Map<String, dynamic> title;
@@ -17,6 +17,7 @@ class SearchCard extends StatelessWidget {
     required this.title,
     required this.disabled,
     required this.type,
+    required this.callback,
   });
 
   @override
@@ -30,6 +31,7 @@ class SearchCard extends StatelessWidget {
             tag: id,
             title: title,
             disabled: disabled,
+            callback: callback,
           ),
           Positioned(
             top: 20,

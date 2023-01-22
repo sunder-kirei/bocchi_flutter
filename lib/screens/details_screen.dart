@@ -94,7 +94,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           : InfoPane(
                               rating: fetchedData!["rating"],
                               releaseDate: fetchedData!["releaseDate"],
-                              studio: fetchedData!["studios"][0],
+                              studio: fetchedData!["studios"].length != 0
+                                  ? fetchedData!["studios"][0]
+                                  : "Unknown",
                               synonyms: fetchedData!["synonyms"],
                               title: fetchedData!["title"],
                             ),
@@ -128,6 +130,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     ),
                     child: Text(
                       parse(fetchedData!["description"]).body?.text as String,
+                      maxLines: 10,
+                      overflow: TextOverflow.ellipsis,
                       style: Theme.of(context)
                           .textTheme
                           .bodySmall
@@ -141,18 +145,19 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     height: 0,
                     thickness: 1,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 10,
+                  if (fetchedData!["episodes"].length != 0)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                        vertical: 10,
+                      ),
+                      child: Text(
+                        "Episodes",
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              color: const Color.fromRGBO(243, 198, 105, 1),
+                            ),
+                      ),
                     ),
-                    child: Text(
-                      "Episodes",
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: const Color.fromRGBO(243, 198, 105, 1),
-                          ),
-                    ),
-                  ),
                 ],
               ],
             ),
@@ -270,6 +275,82 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 ),
               ),
             ],
+            if (fetchedData!["recommendations"].length != 0) ...[
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Divider(
+                      height: 0,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                        vertical: 10,
+                      ),
+                      child: Text(
+                        "Recommendations",
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              color: const Color.fromRGBO(243, 198, 105, 1),
+                            ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      height: 250,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemExtent: 170,
+                        itemBuilder: (context, index) {
+                          final data = fetchedData!["recommendations"][index];
+                          return SizedBox(
+                            child: Stack(
+                              children: [
+                                RowItem(
+                                  title: data["title"],
+                                  tag: data["id"].toString(),
+                                  image: data["image"],
+                                  id: data["id"].toString(),
+                                  disabled: data["episodes"] == null,
+                                ),
+                                Positioned(
+                                  top: 20,
+                                  right: 4,
+                                  child: FittedBox(
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                        borderRadius: BorderRadius.horizontal(
+                                          left: Radius.circular(5),
+                                        ),
+                                        color: Colors.red,
+                                      ),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 5,
+                                        vertical: 3,
+                                      ),
+                                      child: Text(
+                                        data["type"],
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        itemCount: fetchedData!["relations"].length,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ]
           ]
         ],
       ),

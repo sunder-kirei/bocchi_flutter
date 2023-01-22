@@ -71,7 +71,7 @@ class _CustomPlayerState extends State<CustomPlayer> {
       };
     }).toList();
 
-    final url = Uri.parse(streams[0]["url"]);
+    final url = Uri.parse(streams[quality!]["url"]);
 
     _videoPlayerController = VideoPlayerController.contentUri(url);
 
@@ -94,9 +94,14 @@ class _CustomPlayerState extends State<CustomPlayer> {
     return ChewieController(
       videoPlayerController: _videoPlayerController!,
       showControlsOnInitialize: true,
+      autoPlay: true,
       deviceOrientationsAfterFullScreen: [
         DeviceOrientation.portraitUp,
         DeviceOrientation.portraitDown,
+      ],
+      deviceOrientationsOnEnterFullScreen: [
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
       ],
       startAt: position,
       aspectRatio: 16 / 9,
@@ -110,6 +115,7 @@ class _CustomPlayerState extends State<CustomPlayer> {
         OptionItem(
           onTap: () {
             Navigator.of(context).pop();
+
             showModalBottomSheet(
               context: context,
               builder: (context) => SingleChildScrollView(
@@ -119,6 +125,7 @@ class _CustomPlayerState extends State<CustomPlayer> {
                     ...(streams).asMap().entries.map((item) {
                       int index = item.key;
                       dynamic height = item.value["quality"];
+
                       return ListTile(
                         leading: Icon(
                           Icons.check_rounded,

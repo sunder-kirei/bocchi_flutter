@@ -42,31 +42,16 @@ class MyApp extends StatelessWidget {
                         AndroidOverscrollIndicator.stretch,
                   ),
                   darkTheme: ThemeData.dark().copyWith(
+                    colorScheme: const ColorScheme.dark().copyWith(
+                      primary: Colors.pinkAccent,
+                    ),
                     outlinedButtonTheme: OutlinedButtonThemeData(
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color.fromRGBO(243, 198, 105, 1),
                         minimumSize: const Size.fromHeight(45),
                         textStyle: const TextStyle(
                           fontSize: 16,
                         ),
                       ),
-                    ),
-                    elevatedButtonTheme: ElevatedButtonThemeData(
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: const Color.fromRGBO(243, 198, 105, 1),
-                        minimumSize: const Size.fromHeight(50),
-                        textStyle: Theme.of(context)
-                            .textTheme
-                            .titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w500),
-                      ),
-                    ),
-                    floatingActionButtonTheme: FloatingActionButtonThemeData(
-                      backgroundColor: const Color.fromRGBO(243, 198, 105, 1),
-                      foregroundColor:
-                          Theme.of(context).colorScheme.onBackground,
-                      splashColor: Colors.white10,
                     ),
                   ),
                   themeMode: ThemeMode.dark,

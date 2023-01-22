@@ -10,6 +10,7 @@ class RowItem extends StatelessWidget {
   final String id;
   final String tag;
   final bool disabled;
+  final VoidCallback? callback;
   const RowItem({
     super.key,
     required this.title,
@@ -17,6 +18,7 @@ class RowItem extends StatelessWidget {
     required this.image,
     required this.id,
     this.disabled = false,
+    this.callback,
   });
 
   @override
@@ -33,7 +35,7 @@ class RowItem extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
             ),
-            backgroundColor: Colors.black54,
+            backgroundColor: Color.fromRGBO(0, 0, 0, 0.75),
           ),
           child: Stack(
             children: [
@@ -49,6 +51,7 @@ class RowItem extends StatelessWidget {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(5),
                     onTap: () {
+                      if (callback != null) callback!();
                       if (disabled) return;
                       Navigator.of(context).pushNamed(
                         DetailsScreen.routeName,

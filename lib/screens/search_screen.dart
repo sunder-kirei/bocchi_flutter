@@ -35,7 +35,6 @@ class _SearchScreenState extends State<SearchScreen> {
       isLoading = false;
       fetchedData = response;
     });
-    print(fetchedData);
   }
 
   @override
@@ -75,20 +74,12 @@ class _SearchScreenState extends State<SearchScreen> {
                     TextField(
                       controller: _controller,
                       focusNode: _focusNode,
-                      cursorColor: const Color.fromRGBO(243, 198, 105, 1),
                       keyboardType: TextInputType.text,
                       textCapitalization: TextCapitalization.sentences,
                       onEditingComplete: () {
                         _focusNode!.unfocus();
                         fetchData(_controller!.text);
                       },
-                      decoration: const InputDecoration(
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color.fromRGBO(243, 198, 105, 1),
-                          ),
-                        ),
-                      ),
                     ),
                     const SizedBox(
                       height: 5,
@@ -103,11 +94,6 @@ class _SearchScreenState extends State<SearchScreen> {
                         FocusScope.of(context).unfocus();
                         fetchData(_controller!.text);
                       },
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(
-                          color: Color.fromRGBO(243, 198, 105, 1),
-                        ),
-                      ),
                       icon: const Icon(Icons.search_outlined),
                       label: const Text("Search"),
                     ),
@@ -134,11 +120,13 @@ class _SearchScreenState extends State<SearchScreen> {
                   (context, index) {
                     final data = fetchedData!["results"][index];
                     return SearchCard(
+                      callback: () => FocusScope.of(context).unfocus(),
                       title: data["title"],
                       type: data["type"],
                       image: data["image"],
                       id: data["id"],
-                      disabled: data["status"] == "Not yet aired",
+                      disabled: data["status"] == "Not yet aired" ||
+                          data["malId"] == null,
                     );
                   },
                   childCount: fetchedData!["results"].length,

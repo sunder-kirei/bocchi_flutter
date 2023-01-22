@@ -45,21 +45,31 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       isLoading = true;
       currentEpisode = episode;
     });
+    scrollToEpisode(
+      episode: currentEpisode!,
+      duration: Duration(milliseconds: 300),
+    );
     final response = await HttpHelper.getVideo(
       episodeID: fetchedData!["episodes"][episode - 1]["id"],
       provider: provider,
     );
     setState(() {
       videoSources = response["sources"];
-      // subtitles = response["subtitles"];
       isLoading = false;
     });
   }
 
-  void scrollToEpisode({int episode = 1}) {
+  void scrollToEpisode({
+    int episode = 1,
+    Duration duration = Duration.zero,
+  }) {
     _controller.animateTo(
       100 * (episode - 1),
-      duration: Duration(milliseconds: 500),
+      duration: duration == Duration.zero
+          ? Duration(
+              milliseconds: ((episode) * 60),
+            )
+          : duration,
       curve: Curves.easeOut,
     );
   }
@@ -76,6 +86,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
           as Map<String, dynamic>)["episode"];
       details = (ModalRoute.of(context)!.settings.arguments
           as Map<String, dynamic>)["details"];
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      scrollToEpisode(episode: currentEpisode!);
     });
     getStreamInfo(provider: Stream.animepahe);
     super.didChangeDependencies();
@@ -192,7 +205,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     },
                     child: Container(
                       color: data["number"] == currentEpisode
-                          ? Colors.white12
+                          ? Theme.of(context).colorScheme.background
                           : null,
                       width: MediaQuery.of(context).size.width,
                       height: 100,
