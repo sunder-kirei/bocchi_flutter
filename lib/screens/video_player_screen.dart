@@ -16,7 +16,7 @@ class VideoPlayerScreen extends StatefulWidget {
 }
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
-  ScrollController _controller = ScrollController();
+  final ScrollController _controller = ScrollController();
   Map<String, dynamic>? fetchedData;
   List<dynamic>? details;
   List<dynamic>? videoSources;
@@ -42,6 +42,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   }
 
   Future<void> getEpisode({int episode = 1, required Stream provider}) async {
+    Provider.of<Watchlist>(
+      context,
+      listen: false,
+    ).addToHistory(
+      episode: episode,
+      image: (ModalRoute.of(context)!.settings.arguments
+          as Map<String, dynamic>)["image"],
+      episodeImage: details![episode!]["image"],
+      itemId: (ModalRoute.of(context)!.settings.arguments
+          as Map<String, dynamic>)["id"],
+      position: 0,
+    );
     setState(() {
       isLoading = true;
       currentEpisode = episode;
@@ -110,7 +122,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   child: isLoading == false && videoSources != null
                       ? CustomPlayer(
                           streams: videoSources!,
-                          // subtitles: subtitles!,
+                          // callback: ({required int position}) {},
                         )
                       : Container(
                           color: Theme.of(context).colorScheme.surface,

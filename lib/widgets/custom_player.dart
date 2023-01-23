@@ -12,11 +12,11 @@ import 'package:video_player/video_player.dart';
 
 class CustomPlayer extends StatefulWidget {
   final List<dynamic> streams;
-  // final List<dynamic> subtitles;
+  // final Function callback;
   const CustomPlayer({
     super.key,
     required this.streams,
-    // required this.subtitles,
+    // required this.callback,
   });
 
   @override
@@ -59,6 +59,9 @@ class _CustomPlayerState extends State<CustomPlayer> {
     Duration position = Duration.zero,
     required int index,
   }) async {
+    // widget.callback(
+    //   position: position.inSeconds,
+    // );
     setState(() {
       quality = index;
     });
