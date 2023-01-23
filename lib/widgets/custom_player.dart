@@ -95,7 +95,7 @@ class _CustomPlayerState extends State<CustomPlayer> {
     return ChewieController(
       videoPlayerController: _videoPlayerController!,
       showControlsOnInitialize: true,
-      autoPlay: true,
+      // autoPlay: true,
       deviceOrientationsAfterFullScreen: [
         DeviceOrientation.portraitUp,
         DeviceOrientation.portraitDown,
@@ -114,18 +114,66 @@ class _CustomPlayerState extends State<CustomPlayer> {
         handleColor: Theme.of(context).colorScheme.primary,
         playedColor: Theme.of(context).colorScheme.primary,
       ),
-      overlay: Row(
-        children: [
-          Container(
-            color: Colors.red,
-            width: MediaQuery.of(context).size.width / 2 - 40,
-          ),
-          Spacer(),
-          Container(
-            color: Colors.blue,
-            width: MediaQuery.of(context).size.width / 2 - 40,
-          ),
-        ],
+      customControls: LayoutBuilder(
+        builder: (context, constraints) => Stack(
+          children: [
+            Positioned.fill(
+              child: MaterialControls(
+                showPlayButton: true,
+              ),
+            ),
+            Positioned(
+              left: constraints.maxWidth / 4,
+              top: constraints.maxHeight / 2 - 25,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(30),
+                child: Material(
+                  color: Colors.transparent,
+                  child: IconButton(
+                    tooltip: "Rewind",
+                    icon: const Icon(Icons.keyboard_double_arrow_left_rounded),
+                    onPressed: () async {
+                      final position =
+                          await _controller!.videoPlayerController.position;
+                      final seekTo = position!.inSeconds - 10;
+                      _controller!.seekTo(
+                        Duration(
+                          seconds: seekTo,
+                        ),
+                      );
+                      return;
+                    },
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              right: constraints.maxWidth / 4,
+              top: constraints.maxHeight / 2 - 25,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(30),
+                child: Material(
+                  color: Colors.transparent,
+                  child: IconButton(
+                    tooltip: "Seek",
+                    icon: const Icon(Icons.keyboard_double_arrow_right_rounded),
+                    onPressed: () async {
+                      final position =
+                          await _controller!.videoPlayerController.position;
+                      final seekTo = position!.inSeconds + 10;
+                      _controller!.seekTo(
+                        Duration(
+                          seconds: seekTo,
+                        ),
+                      );
+                      return;
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       additionalOptions: (context) => [
         OptionItem(

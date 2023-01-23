@@ -1,4 +1,5 @@
 import 'package:anime_api/helpers/http_helper.dart';
+import 'package:anime_api/providers/user_preferences.dart';
 import 'package:anime_api/widgets/custom_player.dart';
 import 'package:anime_api/widgets/custom_tile.dart';
 import 'package:anime_api/widgets/hero_image.dart';
