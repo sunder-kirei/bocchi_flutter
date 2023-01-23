@@ -1,14 +1,27 @@
+import 'dart:convert';
+
 import 'package:anime_api/helpers/http_helper.dart';
 import 'package:anime_api/providers/user_preferences.dart';
 import 'package:anime_api/widgets/custom_player.dart';
 import 'package:anime_api/widgets/custom_tile.dart';
 import 'package:anime_api/widgets/hero_image.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
-  const VideoPlayerScreen({super.key});
+  final String id;
+  final String image;
+  final int episode;
+  final List<dynamic> details;
+  final int position;
+  const VideoPlayerScreen({
+    super.key,
+    required this.id,
+    required this.image,
+    required this.episode,
+    required this.details,
+    this.position = 0,
+  });
   static const routeName = "/watch";
 
   @override
@@ -18,17 +31,13 @@ class VideoPlayerScreen extends StatefulWidget {
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   final ScrollController _controller = ScrollController();
   Map<String, dynamic>? fetchedData;
-  List<dynamic>? details;
   List<dynamic>? videoSources;
   int? currentEpisode;
   bool isLoading = true;
 
   Future<void> getStreamInfo({required Stream provider}) async {
     final response = await HttpHelper.getInfo(
-      malID: int.parse(
-        (ModalRoute.of(context)!.settings.arguments
-            as Map<String, dynamic>)["id"],
-      ),
+      malID: int.parse(widget.id),
       provider: provider,
     );
     setState(() {
@@ -47,11 +56,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       listen: false,
     ).addToHistory(
       episode: episode,
-      image: (ModalRoute.of(context)!.settings.arguments
-          as Map<String, dynamic>)["image"],
-      episodeImage: details![episode - 1]["image"],
-      itemId: (ModalRoute.of(context)!.settings.arguments
-          as Map<String, dynamic>)["id"],
+      image: widget.image,
+      episodeImage: widget.details[episode - 1]["image"],
+      itemId: widget.id,
+      details: json.encode(widget.details),
+      position: 0,
     );
     setState(() {
       isLoading = true;
@@ -59,7 +68,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     });
     scrollToEpisode(
       episode: currentEpisode!,
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
     );
     final response = await HttpHelper.getVideo(
       episodeID: fetchedData!["episodes"][episode - 1]["id"],
@@ -86,6 +95,21 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     );
   }
 
+  Future<void> callback({required int? position}) async {
+    int episode = currentEpisode ?? 1;
+    await Provider.of<Watchlist>(
+      context,
+      listen: false,
+    ).addToHistory(
+      episode: episode,
+      image: widget.image,
+      episodeImage: widget.details[episode - 1]["image"],
+      itemId: widget.id,
+      details: json.encode(widget.details),
+      position: position ?? 0,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -94,10 +118,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   @override
   void didChangeDependencies() {
     setState(() {
-      currentEpisode = (ModalRoute.of(context)!.settings.arguments
-          as Map<String, dynamic>)["episode"];
-      details = (ModalRoute.of(context)!.settings.arguments
-          as Map<String, dynamic>)["details"];
+      currentEpisode = widget.episode;
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       scrollToEpisode(episode: currentEpisode!);
@@ -121,7 +142,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   child: isLoading == false && videoSources != null
                       ? CustomPlayer(
                           streams: videoSources!,
-                          // callback: ({required int position}) {},
+                          callback: callback,
+                          initialPosition: widget.position,
                         )
                       : Container(
                           color: Theme.of(context).colorScheme.surface,
@@ -139,12 +161,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     direction: Axis.horizontal,
                     children: [
                       HeroImage(
-                        imageUrl: (ModalRoute.of(context)!.settings.arguments
-                            as Map<String, dynamic>)["image"],
-                        tag: (ModalRoute.of(context)!.settings.arguments
-                            as Map<String, dynamic>)["id"],
+                        imageUrl: widget.image,
+                        tag: widget.id,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 10,
                       ),
                       if (fetchedData != null)
@@ -152,14 +172,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(
+                              const SizedBox(
                                 height: 5,
                               ),
                               Text(
                                 "Currently Watching",
                                 style: Theme.of(context).textTheme.caption,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 3,
                               ),
                               Text(
@@ -168,14 +188,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                                 overflow: TextOverflow.ellipsis,
                                 style: Theme.of(context).textTheme.titleLarge,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 10,
                               ),
                               Text(
                                 "Episode",
                                 style: Theme.of(context).textTheme.caption,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 3,
                               ),
                               Text(
@@ -188,10 +208,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     ],
                   ),
                 ),
-                Divider(),
+                const Divider(),
               ],
             ),
-            // if (details != null) ...[
             Padding(
               padding: const EdgeInsets.all(5.0),
               child: Text(
@@ -199,45 +218,41 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 6,
             ),
-            if ((ModalRoute.of(context)!.settings.arguments
-                    as Map<String, dynamic>)["history"] !=
-                null)
-              Flexible(
-                child: ListView.builder(
-                  controller: _controller,
-                  itemBuilder: (context, index) {
-                    final data = details![index];
-                    return InkWell(
-                      onTap: () {
-                        getEpisode(
-                          episode: data["number"],
-                          provider: Stream.animepahe,
-                        );
-                      },
-                      child: Container(
-                        color: data["number"] == currentEpisode
-                            ? Theme.of(context).colorScheme.background
-                            : null,
-                        width: MediaQuery.of(context).size.width,
-                        height: 100,
-                        child: CustomTile(
-                          image: data["image"],
-                          episodeNumber: data["number"],
-                          airDate: data["airDate"],
-                          description: data["description"],
-                          key: ValueKey(data["number"]),
-                          title: data["title"],
-                        ),
+            Flexible(
+              child: ListView.builder(
+                controller: _controller,
+                itemBuilder: (context, index) {
+                  final data = widget.details[index];
+                  return InkWell(
+                    onTap: () {
+                      getEpisode(
+                        episode: data["number"],
+                        provider: Stream.animepahe,
+                      );
+                    },
+                    child: Container(
+                      color: data["number"] == currentEpisode
+                          ? Theme.of(context).colorScheme.background
+                          : null,
+                      width: MediaQuery.of(context).size.width,
+                      height: 100,
+                      child: CustomTile(
+                        image: data["image"],
+                        episodeNumber: data["number"],
+                        airDate: data["airDate"],
+                        description: data["description"],
+                        key: ValueKey(data["number"]),
+                        title: data["title"],
                       ),
-                    );
-                  },
-                  itemCount: details!.length,
-                ),
+                    ),
+                  );
+                },
+                itemCount: widget.details.length,
               ),
-            // ],
+            )
           ],
         ),
       ),

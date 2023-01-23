@@ -1,5 +1,3 @@
-import 'package:anime_api/screens/video_player_screen.dart';
-
 import '../providers/user_preferences.dart';
 import '../screens/search_screen.dart';
 import 'package:flutter/material.dart';
@@ -57,8 +55,6 @@ class MyApp extends StatelessWidget {
                   routes: {
                     HomeScreen.routeName: (context) => const HomeScreen(),
                     DetailsScreen.routeName: (context) => const DetailsScreen(),
-                    VideoPlayerScreen.routeName: (context) =>
-                        const VideoPlayerScreen(),
                     SearchScreen.routeName: (context) => const SearchScreen(),
                   },
                 );

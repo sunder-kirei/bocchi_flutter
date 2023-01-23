@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:anime_api/providers/user_preferences.dart';
 import 'package:anime_api/screens/video_player_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 
+import '../helpers/custom_route.dart';
 import '../widgets/custom_drawer.dart';
 import '../widgets/bocchi_rich_text.dart';
 import '../widgets/row_item.dart';
@@ -47,15 +50,18 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             SliverToBoxAdapter(
-              child: SizedBox(
+              child: Container(
                 height: 120,
+                padding: const EdgeInsets.symmetric(horizontal: 5),
                 child: ListView.separated(
-                  separatorBuilder: (context, index) => SizedBox(
-                    width: 10,
+                  separatorBuilder: (context, index) => const SizedBox(
+                    width: 5,
                   ),
                   itemBuilder: (context, index) {
-                    final data =
-                        Provider.of<Watchlist>(context).getHistory[index];
+                    final data = Provider.of<Watchlist>(context)
+                        .getHistory
+                        .reversed
+                        .toList()[index];
                     return ClipRRect(
                       borderRadius: BorderRadius.circular(5),
                       child: AspectRatio(
@@ -82,11 +88,16 @@ class HomeScreen extends StatelessWidget {
                                 color: Colors.transparent,
                                 child: InkWell(
                                   onTap: () {
-                                    Navigator.of(context).pushNamed(
-                                      VideoPlayerScreen.routeName,
-                                      arguments: {
-                                        
-                                      },
+                                    Navigator.of(context).push(
+                                      CustomRoute(
+                                        builder: (context) => VideoPlayerScreen(
+                                          id: data["id"],
+                                          image: data["image"],
+                                          episode: data["episode"],
+                                          details: json.decode(data["details"]),
+                                          position: data["position"],
+                                        ),
+                                      ),
                                     );
                                   },
                                 ),
@@ -99,7 +110,6 @@ class HomeScreen extends StatelessWidget {
                   },
                   itemCount: Provider.of<Watchlist>(context).getHistory.length,
                   scrollDirection: Axis.horizontal,
-                  reverse: true,
                 ),
               ),
             )

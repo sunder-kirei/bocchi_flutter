@@ -1,22 +1,17 @@
-import "dart:convert";
-import 'dart:ffi';
-
 import 'package:chewie/chewie.dart';
-import '../helpers/http_helper.dart';
-import '../providers/user_preferences.dart';
 import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 class CustomPlayer extends StatefulWidget {
   final List<dynamic> streams;
-  // final Function callback;
+  final Function callback;
+  final int initialPosition;
   const CustomPlayer({
     super.key,
     required this.streams,
-    // required this.callback,
+    required this.callback,
+    required this.initialPosition,
   });
 
   @override
@@ -34,6 +29,9 @@ class _CustomPlayerState extends State<CustomPlayer> {
   void initState() {
     initPlayer(
       index: 0,
+      position: Duration(
+        seconds: widget.initialPosition,
+      ),
     );
     super.initState();
   }
@@ -56,7 +54,7 @@ class _CustomPlayerState extends State<CustomPlayer> {
   }
 
   void initPlayer({
-    Duration position = Duration.zero,
+    required Duration position,
     required int index,
   }) async {
     // widget.callback(
@@ -107,7 +105,6 @@ class _CustomPlayerState extends State<CustomPlayer> {
         DeviceOrientation.landscapeLeft,
         DeviceOrientation.landscapeRight,
       ],
-      zoomAndPan: true,
       startAt: position,
       maxScale: 2,
       aspectRatio: 16 / 9,
@@ -116,67 +113,6 @@ class _CustomPlayerState extends State<CustomPlayer> {
         bufferedColor: Colors.grey[300] as Color,
         handleColor: Theme.of(context).colorScheme.primary,
         playedColor: Theme.of(context).colorScheme.primary,
-      ),
-      customControls: LayoutBuilder(
-        builder: (context, constraints) => Stack(
-          children: [
-            Positioned.fill(
-              child: MaterialControls(
-                showPlayButton: true,
-              ),
-            ),
-            Positioned(
-              left: constraints.maxWidth / 4,
-              top: constraints.maxHeight / 2 - 25,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(30),
-                child: Material(
-                  color: Colors.transparent,
-                  child: IconButton(
-                    tooltip: "Rewind",
-                    icon: const Icon(Icons.keyboard_double_arrow_left_rounded),
-                    onPressed: () async {
-                      final position =
-                          await _controller!.videoPlayerController.position;
-                      final seekTo = position!.inSeconds - 10;
-                      _controller!.seekTo(
-                        Duration(
-                          seconds: seekTo,
-                        ),
-                      );
-                      return;
-                    },
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              right: constraints.maxWidth / 4,
-              top: constraints.maxHeight / 2 - 25,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(30),
-                child: Material(
-                  color: Colors.transparent,
-                  child: IconButton(
-                    tooltip: "Seek",
-                    icon: const Icon(Icons.keyboard_double_arrow_right_rounded),
-                    onPressed: () async {
-                      final position =
-                          await _controller!.videoPlayerController.position;
-                      final seekTo = position!.inSeconds + 10;
-                      _controller!.seekTo(
-                        Duration(
-                          seconds: seekTo,
-                        ),
-                      );
-                      return;
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
       additionalOptions: (context) => [
         OptionItem(
@@ -235,15 +171,22 @@ class _CustomPlayerState extends State<CustomPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    return hasLoaded
-        ? Chewie(controller: _controller!)
-        : Container(
-            color: Theme.of(context).colorScheme.surface,
-            child: Center(
-              child: CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.onBackground,
+    return WillPopScope(
+      onWillPop: () async {
+        final position = await _controller!.videoPlayerController.position;
+        await widget.callback(position: position?.inSeconds);
+        return true;
+      },
+      child: hasLoaded
+          ? Chewie(controller: _controller!)
+          : Container(
+              color: Theme.of(context).colorScheme.surface,
+              child: Center(
+                child: CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.onBackground,
+                ),
               ),
             ),
-          );
+    );
   }
 }

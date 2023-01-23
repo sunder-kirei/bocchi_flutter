@@ -1,4 +1,3 @@
-import '../screens/details_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'row_item.dart';
@@ -44,7 +43,7 @@ class SearchCard extends StatelessWidget {
                   ),
                   color: Colors.red,
                 ),
-                padding: EdgeInsets.symmetric(
+                padding: const EdgeInsets.symmetric(
                   horizontal: 5,
                   vertical: 3,
                 ),

@@ -1,6 +1,3 @@
-import 'dart:ffi';
-import 'dart:math';
-
 import 'package:anime_api/helpers/db_helper.dart';
 import 'package:flutter/foundation.dart';
 
@@ -55,12 +52,16 @@ class Watchlist with ChangeNotifier {
     required String episodeImage,
     required String image,
     required int episode,
+    required String details,
+    required int position,
   }) async {
     await DBHelper.insertHistory(
       itemId: itemId,
       episodeImage: episodeImage,
       image: image,
       episode: episode,
+      details: details,
+      position: position,
     );
     await fetchHistory();
     return;

@@ -1,8 +1,6 @@
-import '../providers/user_preferences.dart';
 import '../screens/details_screen.dart';
 import '../widgets/hero_image.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class RowItem extends StatelessWidget {
   final Map<String, dynamic> title;
@@ -35,7 +33,7 @@ class RowItem extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
             ),
-            backgroundColor: Color.fromRGBO(0, 0, 0, 0.75),
+            backgroundColor: const Color.fromRGBO(0, 0, 0, 0.75),
           ),
           child: Stack(
             children: [

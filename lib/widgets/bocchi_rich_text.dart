@@ -9,11 +9,11 @@ class BocchiRichText extends StatelessWidget {
     return RichText(
       text: TextSpan(
         text: "bocchi",
-        children: [
+        children: const [
           TextSpan(
             text: ".",
             style: TextStyle(
-              color: Colors.pinkAccent as Color,
+              color: Colors.pinkAccent,
             ),
           ),
           TextSpan(text: "tv"),

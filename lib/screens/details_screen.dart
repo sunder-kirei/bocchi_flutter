@@ -1,4 +1,4 @@
-import 'package:anime_api/helpers/db_helper.dart';
+import 'package:anime_api/helpers/custom_route.dart';
 import 'package:anime_api/providers/user_preferences.dart';
 import 'package:anime_api/screens/video_player_screen.dart';
 import 'package:anime_api/widgets/custom_tile.dart';
@@ -78,14 +78,15 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   icon: const Icon(Icons.play_arrow_rounded),
                                   onPressed: () {
                                     final data = fetchedData!["episodes"][0];
-                                    Navigator.of(context).pushNamed(
-                                      VideoPlayerScreen.routeName,
-                                      arguments: {
-                                        "id": fetchedData!["id"],
-                                        "image": fetchedData!["image"],
-                                        "episode": data["number"],
-                                        "details": fetchedData!["episodes"],
-                                      },
+                                    Navigator.of(context).push(
+                                      CustomRoute(
+                                        builder: (context) => VideoPlayerScreen(
+                                          details: fetchedData!["episodes"],
+                                          episode: data["number"],
+                                          image: fetchedData!["image"],
+                                          id: fetchedData!["id"],
+                                        ),
+                                      ),
                                     );
                                   },
                                   iconSize: 80,
@@ -202,14 +203,15 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 (context, index) {
                   final data = fetchedData!["episodes"][index];
                   return InkWell(
-                    onTap: () => Navigator.of(context).pushNamed(
-                      VideoPlayerScreen.routeName,
-                      arguments: {
-                        "id": fetchedData!["id"],
-                        "image": fetchedData!["image"],
-                        "episode": data!["number"],
-                        "details": fetchedData!["episodes"],
-                      },
+                    onTap: () => Navigator.of(context).push(
+                      CustomRoute(
+                        builder: (context) => VideoPlayerScreen(
+                          details: fetchedData!["episodes"],
+                          episode: data["number"],
+                          image: fetchedData!["image"],
+                          id: fetchedData!["id"],
+                        ),
+                      ),
                     ),
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width,
@@ -234,10 +236,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
-                    Divider(
+                    const Divider(
                       height: 0,
                     ),
                     Padding(
@@ -281,7 +283,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                         ),
                                         color: Colors.red,
                                       ),
-                                      padding: EdgeInsets.symmetric(
+                                      padding: const EdgeInsets.symmetric(
                                         horizontal: 5,
                                         vertical: 3,
                                       ),
@@ -314,10 +316,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
-                    Divider(
+                    const Divider(
                       height: 0,
                     ),
                     Padding(
@@ -366,7 +368,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                         ),
                                         color: Colors.red,
                                       ),
-                                      padding: EdgeInsets.symmetric(
+                                      padding: const EdgeInsets.symmetric(
                                         horizontal: 5,
                                         vertical: 3,
                                       ),
@@ -418,8 +420,8 @@ class Buttons extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 5),
             child: OutlinedButton.icon(
               icon: isPresent
-                  ? Icon(Icons.done)
-                  : Icon(Icons.watch_later_outlined),
+                  ? const Icon(Icons.done)
+                  : const Icon(Icons.watch_later_outlined),
               label: isPresent
                   ? const Text("On Watchlist")
                   : const Text("Watchlist"),

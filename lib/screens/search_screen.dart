@@ -1,12 +1,6 @@
-import 'dart:convert';
-
-import 'package:anime_api/widgets/row_item.dart';
-
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../helpers/http_helper.dart';
-import '../providers/user_preferences.dart';
 import '../widgets/search_card.dart';
 
 class SearchScreen extends StatefulWidget {
