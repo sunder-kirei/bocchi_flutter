@@ -49,7 +49,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       episode: episode,
       image: (ModalRoute.of(context)!.settings.arguments
           as Map<String, dynamic>)["image"],
-      episodeImage: details![episode]["image"],
+      episodeImage: details![episode - 1]["image"],
       itemId: (ModalRoute.of(context)!.settings.arguments
           as Map<String, dynamic>)["id"],
     );
@@ -202,39 +202,41 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
             SizedBox(
               height: 6,
             ),
-            Flexible(
-              child: ListView.builder(
-                controller: _controller,
-                itemBuilder: (context, index) {
-                  // final data = fetchedData!["episodes"][index];
-                  final data = details![index];
-                  return InkWell(
-                    onTap: () {
-                      getEpisode(
-                        episode: data["number"],
-                        provider: Stream.animepahe,
-                      );
-                    },
-                    child: Container(
-                      color: data["number"] == currentEpisode
-                          ? Theme.of(context).colorScheme.background
-                          : null,
-                      width: MediaQuery.of(context).size.width,
-                      height: 100,
-                      child: CustomTile(
-                        image: data["image"],
-                        episodeNumber: data["number"],
-                        airDate: data["airDate"],
-                        description: data["description"],
-                        key: ValueKey(data["number"]),
-                        title: data["title"],
+            if ((ModalRoute.of(context)!.settings.arguments
+                    as Map<String, dynamic>)["history"] !=
+                null)
+              Flexible(
+                child: ListView.builder(
+                  controller: _controller,
+                  itemBuilder: (context, index) {
+                    final data = details![index];
+                    return InkWell(
+                      onTap: () {
+                        getEpisode(
+                          episode: data["number"],
+                          provider: Stream.animepahe,
+                        );
+                      },
+                      child: Container(
+                        color: data["number"] == currentEpisode
+                            ? Theme.of(context).colorScheme.background
+                            : null,
+                        width: MediaQuery.of(context).size.width,
+                        height: 100,
+                        child: CustomTile(
+                          image: data["image"],
+                          episodeNumber: data["number"],
+                          airDate: data["airDate"],
+                          description: data["description"],
+                          key: ValueKey(data["number"]),
+                          title: data["title"],
+                        ),
                       ),
-                    ),
-                  );
-                },
-                itemCount: details!.length,
+                    );
+                  },
+                  itemCount: details!.length,
+                ),
               ),
-            ),
             // ],
           ],
         ),

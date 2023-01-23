@@ -22,6 +22,12 @@ class Watchlist with ChangeNotifier {
     return;
   }
 
+  Future<void> fetchAll() async {
+    await fetchWatchlist();
+    await fetchHistory();
+    return;
+  }
+
   List<Map<String, dynamic>> get getWatchlist {
     return [...watchlist];
   }
@@ -56,7 +62,7 @@ class Watchlist with ChangeNotifier {
       image: image,
       episode: episode,
     );
-    await fetchWatchlist();
+    await fetchHistory();
     return;
   }
 

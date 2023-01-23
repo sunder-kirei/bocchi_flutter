@@ -28,8 +28,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
         create: (context) => Watchlist(),
         builder: (context, _) => FutureBuilder(
-              future: Provider.of<Watchlist>(context, listen: false)
-                  .fetchWatchlist(),
+              future: Provider.of<Watchlist>(context, listen: false).fetchAll(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   FlutterNativeSplash.remove();

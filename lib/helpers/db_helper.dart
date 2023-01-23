@@ -86,7 +86,7 @@ class DBHelper {
   }) async {
     final sql = await openDB();
     final id = await sql.insert(
-      tableName,
+      historyTable,
       {
         "id": itemId,
         "image": image,

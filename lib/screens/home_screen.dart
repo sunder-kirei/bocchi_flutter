@@ -1,4 +1,6 @@
 import 'package:anime_api/providers/user_preferences.dart';
+import 'package:anime_api/screens/video_player_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/custom_drawer.dart';
@@ -30,6 +32,78 @@ class HomeScreen extends StatelessWidget {
             ),
             title: const BocchiRichText(fontSize: 20),
           ),
+          if (Provider.of<Watchlist>(context).getHistory.isNotEmpty) ...[
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  left: 5.0,
+                  top: 10,
+                  bottom: 5,
+                ),
+                child: Text(
+                  "Continue Watching",
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: 120,
+                child: ListView.separated(
+                  separatorBuilder: (context, index) => SizedBox(
+                    width: 10,
+                  ),
+                  itemBuilder: (context, index) {
+                    final data =
+                        Provider.of<Watchlist>(context).getHistory[index];
+                    return ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: AspectRatio(
+                        aspectRatio: 16 / 9,
+                        child: Stack(
+                          children: [
+                            Positioned.fill(
+                              child: GridTile(
+                                footer: Container(
+                                  color: Colors.black,
+                                  child: Text(
+                                    "Episode ${data["episode"]}",
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                child: CachedNetworkImage(
+                                  imageUrl: data["episodeImage"],
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            Positioned.fill(
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.of(context).pushNamed(
+                                      VideoPlayerScreen.routeName,
+                                      arguments: {
+                                        
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  itemCount: Provider.of<Watchlist>(context).getHistory.length,
+                  scrollDirection: Axis.horizontal,
+                  reverse: true,
+                ),
+              ),
+            )
+          ],
           if (Provider.of<Watchlist>(context).getWatchlist.isNotEmpty) ...[
             SliverToBoxAdapter(
               child: Padding(
