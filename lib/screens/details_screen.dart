@@ -57,13 +57,43 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 AspectRatio(
                   aspectRatio: 16 / 9,
                   child: fetchedData != null
-                      ? FadeInImage(
-                          placeholder: MemoryImage(kTransparentImage),
-                          image:
-                              CachedNetworkImageProvider(fetchedData!["cover"]),
-                          fit: BoxFit.cover,
-                          fadeInCurve: Curves.easeIn,
-                          fadeInDuration: const Duration(milliseconds: 300),
+                      ? Stack(
+                          children: [
+                            Positioned.fill(
+                              child: FadeInImage(
+                                placeholder: MemoryImage(kTransparentImage),
+                                image: CachedNetworkImageProvider(
+                                  fetchedData!["cover"],
+                                ),
+                                fit: BoxFit.cover,
+                                fadeInCurve: Curves.easeIn,
+                                fadeInDuration:
+                                    const Duration(milliseconds: 300),
+                              ),
+                            ),
+                            Positioned.fill(
+                              child: Material(
+                                color: Colors.transparent,
+                                child: IconButton(
+                                  icon: const Icon(Icons.play_arrow_rounded),
+                                  onPressed: () {
+                                    final data = fetchedData!["episodes"][0];
+                                    Navigator.of(context).pushNamed(
+                                      VideoPlayerScreen.routeName,
+                                      arguments: {
+                                        "id": fetchedData!["id"],
+                                        "image": fetchedData!["image"],
+                                        "episode": data["number"],
+                                        "details": fetchedData!["episodes"],
+                                      },
+                                    );
+                                  },
+                                  iconSize: 80,
+                                  splashRadius: 50,
+                                ),
+                              ),
+                            )
+                          ],
                         )
                       : Image.memory(kTransparentImage),
                 ),
@@ -95,13 +125,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               ),
                             )
                           : InfoPane(
-                              rating: fetchedData!["rating"],
-                              releaseDate: fetchedData!["releaseDate"],
+                              rating: fetchedData!["rating"] ?? 0,
+                              releaseDate: fetchedData!["releaseDate"] ?? 0,
                               studio: fetchedData!["studios"].length != 0
                                   ? fetchedData!["studios"][0]
                                   : "Unknown",
-                              synonyms: fetchedData!["synonyms"],
-                              title: fetchedData!["title"],
+                              synonyms: fetchedData!["synonyms"] ?? "Unknown",
+                              title: fetchedData!["title"] ?? "Unknown",
                             ),
                     ),
                   ],
@@ -122,25 +152,26 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     child: Text(
                       "Description",
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: const Color.fromRGBO(243, 198, 105, 1),
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 5,
+                  if (fetchedData!["description"] != null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                        vertical: 5,
+                      ),
+                      child: Text(
+                        parse(fetchedData!["description"]).body?.text as String,
+                        maxLines: 10,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall
+                            ?.copyWith(fontSize: 14),
+                      ),
                     ),
-                    child: Text(
-                      parse(fetchedData!["description"]).body?.text as String,
-                      maxLines: 10,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(fontSize: 14),
-                    ),
-                  ),
                   const SizedBox(
                     height: 10,
                   ),
@@ -157,7 +188,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       child: Text(
                         "Episodes",
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              color: const Color.fromRGBO(243, 198, 105, 1),
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                       ),
                     ),
@@ -217,7 +248,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       child: Text(
                         "Related Media",
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              color: const Color.fromRGBO(243, 198, 105, 1),
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                       ),
                     ),
@@ -297,7 +328,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       child: Text(
                         "Recommendations",
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              color: const Color.fromRGBO(243, 198, 105, 1),
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                       ),
                     ),
@@ -317,7 +348,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   tag: data["id"].toString(),
                                   image: data["image"],
                                   id: data["id"].toString(),
-                                  disabled: data["episodes"] == null,
+                                  disabled: (data["status"]
+                                                  .toString()
+                                                  .toLowerCase() ==
+                                              "not yet aired" ||
+                                          data["malId"] == null) ||
+                                      data["episodes"] == null,
                                 ),
                                 Positioned(
                                   top: 20,
@@ -391,15 +427,11 @@ class Buttons extends StatelessWidget {
                 await Provider.of<Watchlist>(
                   context,
                   listen: false,
-                ).addToWatchlist(
+                ).toggle(
                   id: fetchedData!["id"],
                   titleRomaji: fetchedData!["title"]["romaji"],
                   image: fetchedData!["image"],
                 );
-                print(Provider.of<Watchlist>(
-                  context,
-                  listen: false,
-                ).getWatchlist);
               },
             ),
           ),

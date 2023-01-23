@@ -48,7 +48,7 @@ class InfoPane extends StatelessWidget {
           style: Theme.of(context).textTheme.caption,
         ),
         Text(
-          releaseDate.toString(),
+          releaseDate != 0 ? releaseDate.toString() : "Unknown",
           style: Theme.of(context).textTheme.titleSmall,
         ),
         Text(
@@ -64,7 +64,7 @@ class InfoPane extends StatelessWidget {
           style: Theme.of(context).textTheme.caption,
         ),
         Text(
-          rating.toString(),
+          rating != 0 ? rating.toString() : "Unknown",
           style: Theme.of(context).textTheme.titleSmall,
         ),
       ],

@@ -30,4 +30,33 @@ class Watchlist with ChangeNotifier {
     await fetchWatchlist();
     return;
   }
+
+  Future<void> removeFromWatchlist({
+    required String id,
+  }) async {
+    await DBHelper.delete(itemId: id);
+    await fetchWatchlist();
+    return;
+  }
+
+  Future<void> toggle({
+    required String id,
+    required String image,
+    required String titleRomaji,
+  }) async {
+    bool isPresent = watchlist.indexWhere(
+          (element) => element["id"] == id,
+        ) !=
+        -1;
+    if (isPresent) {
+      await removeFromWatchlist(id: id);
+      return;
+    }
+    await addToWatchlist(
+      id: id,
+      image: image,
+      titleRomaji: titleRomaji,
+    );
+    return;
+  }
 }

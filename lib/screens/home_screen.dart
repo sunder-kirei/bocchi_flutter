@@ -30,41 +30,45 @@ class HomeScreen extends StatelessWidget {
             ),
             title: const BocchiRichText(fontSize: 20),
           ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(
-                left: 5.0,
-                top: 10,
-                bottom: 5,
-              ),
-              child: Text(
-                "Your Watchlist",
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: SizedBox(
-              height: 250,
-              child: ListView.builder(
-                itemBuilder: (context, index) {
-                  final data =
-                      Provider.of<Watchlist>(context).getWatchlist[index];
-                  return RowItem(
-                    id: data["id"],
-                    image: data["image"],
-                    title: {
-                      "romaji": data["romaji"],
-                    },
-                    tag: "watchlist${data["id"]}",
-                  );
-                },
-                itemCount: Provider.of<Watchlist>(context).getWatchlist.length,
-                scrollDirection: Axis.horizontal,
-                itemExtent: 170,
+          if (Provider.of<Watchlist>(context).getWatchlist.isNotEmpty) ...[
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  left: 5.0,
+                  top: 10,
+                  bottom: 5,
+                ),
+                child: Text(
+                  "Your Watchlist",
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
               ),
             ),
-          ),
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: 250,
+                child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    final data = Provider.of<Watchlist>(
+                      context,
+                    ).getWatchlist[index];
+                    return RowItem(
+                      id: data["id"],
+                      image: data["image"],
+                      title: {
+                        "romaji": data["romaji"],
+                      },
+                      tag: "watchlist${data["id"]}",
+                    );
+                  },
+                  itemCount:
+                      Provider.of<Watchlist>(context).getWatchlist.length,
+                  scrollDirection: Axis.horizontal,
+                  itemExtent: 170,
+                ),
+              ),
+            ),
+          ],
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.only(

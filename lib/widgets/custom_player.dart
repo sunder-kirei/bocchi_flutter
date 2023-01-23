@@ -1,4 +1,5 @@
 import "dart:convert";
+import 'dart:ffi';
 
 import 'package:chewie/chewie.dart';
 import '../helpers/http_helper.dart';
@@ -103,19 +104,33 @@ class _CustomPlayerState extends State<CustomPlayer> {
         DeviceOrientation.landscapeLeft,
         DeviceOrientation.landscapeRight,
       ],
+      zoomAndPan: true,
       startAt: position,
+      maxScale: 2,
       aspectRatio: 16 / 9,
       materialProgressColors: ChewieProgressColors(
         backgroundColor: Colors.grey[900] as Color,
         bufferedColor: Colors.grey[300] as Color,
-        handleColor: const Color.fromRGBO(243, 198, 105, 1),
-        playedColor: const Color.fromRGBO(243, 198, 105, 1),
+        handleColor: Theme.of(context).colorScheme.primary,
+        playedColor: Theme.of(context).colorScheme.primary,
+      ),
+      overlay: Row(
+        children: [
+          Container(
+            color: Colors.red,
+            width: MediaQuery.of(context).size.width / 2 - 40,
+          ),
+          Spacer(),
+          Container(
+            color: Colors.blue,
+            width: MediaQuery.of(context).size.width / 2 - 40,
+          ),
+        ],
       ),
       additionalOptions: (context) => [
         OptionItem(
           onTap: () {
             Navigator.of(context).pop();
-
             showModalBottomSheet(
               context: context,
               builder: (context) => SingleChildScrollView(
@@ -124,8 +139,12 @@ class _CustomPlayerState extends State<CustomPlayer> {
                   children: [
                     ...(streams).asMap().entries.map((item) {
                       int index = item.key;
-                      dynamic height = item.value["quality"];
-
+                      final height = item.value["quality"];
+                      dynamic size;
+                      if (item.value["size"] != null) {
+                        size = ((item.value["size"] / (1024 * 1024)) as double)
+                            .toStringAsFixed(2);
+                      }
                       return ListTile(
                         leading: Icon(
                           Icons.check_rounded,
@@ -133,7 +152,9 @@ class _CustomPlayerState extends State<CustomPlayer> {
                               ? Theme.of(context).colorScheme.onBackground
                               : Colors.transparent,
                         ),
-                        title: Text(height + 'p'),
+                        title: size == null
+                            ? Text("${height}p")
+                            : Text("${height}p\t\t(${size}MB)"),
                         onTap: () {
                           toggleQuality(index);
                           Navigator.of(context).pop();
