@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Watchlist with ChangeNotifier {
   List<Map<String, dynamic>> watchlist = [];
   List<Map<String, dynamic>> history = [];
-  String preferredQuality = "360";
+  String preferredQuality = "720";
 
   Future<void> setQuality({required String quality}) async {
     final preferences = await SharedPreferences.getInstance();
