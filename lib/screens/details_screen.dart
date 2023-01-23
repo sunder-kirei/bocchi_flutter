@@ -71,29 +71,31 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                     const Duration(milliseconds: 300),
                               ),
                             ),
-                            Positioned.fill(
-                              child: Material(
-                                color: Colors.transparent,
-                                child: IconButton(
-                                  icon: const Icon(Icons.play_arrow_rounded),
-                                  onPressed: () {
-                                    final data = fetchedData!["episodes"][0];
-                                    Navigator.of(context).push(
-                                      CustomRoute(
-                                        builder: (context) => VideoPlayerScreen(
-                                          details: fetchedData!["episodes"],
-                                          episode: data["number"],
-                                          image: fetchedData!["image"],
-                                          id: fetchedData!["id"],
+                            if (fetchedData!["episodes"].length != 0)
+                              Positioned.fill(
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.play_arrow_rounded),
+                                    onPressed: () {
+                                      final data = fetchedData!["episodes"][0];
+                                      Navigator.of(context).push(
+                                        CustomRoute(
+                                          builder: (context) =>
+                                              VideoPlayerScreen(
+                                            details: fetchedData!["episodes"],
+                                            episode: data["number"],
+                                            image: fetchedData!["image"],
+                                            id: fetchedData!["id"],
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  },
-                                  iconSize: 80,
-                                  splashRadius: 50,
+                                      );
+                                    },
+                                    iconSize: 80,
+                                    splashRadius: 50,
+                                  ),
                                 ),
-                              ),
-                            )
+                              )
                           ],
                         )
                       : Image.memory(kTransparentImage),

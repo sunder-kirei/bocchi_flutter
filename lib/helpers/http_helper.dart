@@ -15,19 +15,6 @@ enum Stream {
   gogoanime,
 }
 
-enum OrderBy {
-  likes,
-  created_at_unix,
-  views,
-  released_at_unix,
-  title_sortable,
-}
-
-enum Ordering {
-  asc,
-  desc,
-}
-
 class HttpHelper {
   static const baseUrl = "api.consumet.org";
 

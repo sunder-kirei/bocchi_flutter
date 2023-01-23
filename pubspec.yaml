@@ -49,6 +49,7 @@ dependencies:
   flutter_native_splash: ^2.2.16
   url_launcher: ^6.1.7
   transparent_image: ^2.0.0
+  flutter_displaymode: ^0.5.0
 
 dev_dependencies:
   flutter_test:

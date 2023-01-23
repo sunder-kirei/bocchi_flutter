@@ -1,3 +1,5 @@
+import 'package:flutter_displaymode/flutter_displaymode.dart';
+
 import '../providers/user_preferences.dart';
 import '../screens/search_screen.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +16,25 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  Future<void> setRefreshRate() async {
+    final supported = await FlutterDisplayMode.supported;
+    await FlutterDisplayMode.setPreferredMode(supported[1]);
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    setRefreshRate();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

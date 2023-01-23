@@ -1,9 +1,27 @@
 import 'package:anime_api/helpers/db_helper.dart';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Watchlist with ChangeNotifier {
   List<Map<String, dynamic>> watchlist = [];
   List<Map<String, dynamic>> history = [];
+  String preferredQuality = "360";
+
+  Future<void> setQuality({required String quality}) async {
+    final preferences = await SharedPreferences.getInstance();
+    preferences.setString("preferredQuality", quality);
+    preferredQuality = quality;
+    notifyListeners();
+    return;
+  }
+
+  Future<void> fetchQuality() async {
+    final preferences = await SharedPreferences.getInstance();
+    final data = preferences.getString("preferredQuality");
+    preferredQuality = data ?? "360";
+    notifyListeners();
+    return;
+  }
 
   Future<void> fetchWatchlist() async {
     final result = await DBHelper.queryAll();
@@ -22,6 +40,7 @@ class Watchlist with ChangeNotifier {
   Future<void> fetchAll() async {
     await fetchWatchlist();
     await fetchHistory();
+    await fetchQuality();
     return;
   }
 

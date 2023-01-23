@@ -1,6 +1,8 @@
+import 'package:anime_api/providers/user_preferences.dart';
 import 'package:chewie/chewie.dart';
 import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 class CustomPlayer extends StatefulWidget {
@@ -25,10 +27,39 @@ class _CustomPlayerState extends State<CustomPlayer> {
   VideoPlayerController? _videoPlayerController;
   ChewieController? _controller;
 
+  int getPreferredQuality() {
+    int preferredQuality = int.parse(
+      Provider.of<Watchlist>(
+        context,
+        listen: false,
+      ).preferredQuality,
+    );
+    final streams = widget.streams;
+    int index = 0;
+    for (int i = 0; i < streams.length; i++) {
+      final check = int.parse(streams[i]["quality"]);
+      if (check == preferredQuality) {
+        index = i;
+        break;
+      }
+      if (check > preferredQuality) {
+        index = i;
+        break;
+      } else {
+        index = -1;
+      }
+    }
+    if (index == -1) {
+      index = streams.length - 1;
+    }
+    return index;
+  }
+
   @override
   void initState() {
+    int index = getPreferredQuality();
     initPlayer(
-      index: 0,
+      index: index,
       position: Duration(
         seconds: widget.initialPosition,
       ),
@@ -44,22 +75,20 @@ class _CustomPlayerState extends State<CustomPlayer> {
   }
 
   Future<void> toggleQuality(int index) async {
-    _videoPlayerController?.pause();
+    _controller?.exitFullScreen();
+    _controller?.videoPlayerController.pause();
     final position = await _controller?.videoPlayerController.position;
     setState(() {
       hasLoaded = false;
     });
-    initPlayer(index: index, position: position!);
+    await initPlayer(index: index, position: position!);
     return;
   }
 
-  void initPlayer({
+  Future<void> initPlayer({
     required Duration position,
     required int index,
   }) async {
-    // widget.callback(
-    //   position: position.inSeconds,
-    // );
     setState(() {
       quality = index;
     });
@@ -96,7 +125,7 @@ class _CustomPlayerState extends State<CustomPlayer> {
     return ChewieController(
       videoPlayerController: _videoPlayerController!,
       showControlsOnInitialize: true,
-      // autoPlay: true,
+      autoPlay: true,
       deviceOrientationsAfterFullScreen: [
         DeviceOrientation.portraitUp,
         DeviceOrientation.portraitDown,

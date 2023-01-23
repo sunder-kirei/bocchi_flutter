@@ -1,4 +1,5 @@
 import 'package:anime_api/widgets/bocchi_rich_text.dart';
+import 'package:anime_api/widgets/preferences_modal.dart';
 
 import 'package:flutter/material.dart';
 
@@ -25,7 +26,7 @@ class CustomDrawer extends StatelessWidget {
                       bottom: 10,
                     ),
                     leading: CircleAvatar(
-                      backgroundImage: AssetImage("assets/landing_light.jpg"),
+                      backgroundImage: AssetImage("assets/branding.jpg"),
                       radius: 30,
                     ),
                     title: BocchiRichText(
@@ -53,7 +54,18 @@ class CustomDrawer extends StatelessWidget {
                     },
                   ),
                   const Spacer(),
-                  const Divider(),
+                  const Divider(thickness: 1),
+                  ListTile(
+                    title: Text("Preferences"),
+                    leading: Icon(Icons.settings),
+                    style: ListTileStyle.drawer,
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) => PreferencesModal(),
+                      );
+                    },
+                  ),
                   const ListTile(
                     style: ListTileStyle.drawer,
                     leading: Icon(Icons.help_rounded),
