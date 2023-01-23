@@ -14,6 +14,7 @@ class VideoPlayerScreen extends StatefulWidget {
   final int episode;
   final List<dynamic> details;
   final int position;
+  final String title;
   const VideoPlayerScreen({
     super.key,
     required this.id,
@@ -21,6 +22,7 @@ class VideoPlayerScreen extends StatefulWidget {
     required this.episode,
     required this.details,
     this.position = 0,
+    required this.title,
   });
   static const routeName = "/watch";
 
@@ -30,27 +32,14 @@ class VideoPlayerScreen extends StatefulWidget {
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   final ScrollController _controller = ScrollController();
-  Map<String, dynamic>? fetchedData;
   List<dynamic>? videoSources;
   int? currentEpisode;
   bool isLoading = true;
 
-  Future<void> getStreamInfo({required Stream provider}) async {
-    final response = await HttpHelper.getInfo(
-      malID: int.parse(widget.id),
-      provider: provider,
-    );
-    setState(() {
-      fetchedData = response;
-    });
-
-    await getEpisode(
-      episode: currentEpisode!,
-      provider: provider,
-    );
-  }
-
-  Future<void> getEpisode({int episode = 1, required Stream provider}) async {
+  Future<void> getEpisode({
+    int episode = 1,
+    required Stream provider,
+  }) async {
     Provider.of<Watchlist>(
       context,
       listen: false,
@@ -64,16 +53,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     );
     setState(() {
       isLoading = true;
-      currentEpisode = episode;
     });
-    if (_controller.hasClients) {
-      scrollToEpisode(
-        episode: currentEpisode!,
-        duration: const Duration(milliseconds: 300),
-      );
-    }
+    scrollToEpisode(
+      episode: currentEpisode!,
+      duration: const Duration(milliseconds: 300),
+    );
     final response = await HttpHelper.getVideo(
-      episodeID: fetchedData!["episodes"][episode - 1]["id"],
+      episodeID: widget.details[episode - 1]["id"],
       provider: provider,
     );
     setState(() {
@@ -125,7 +111,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       scrollToEpisode(episode: currentEpisode!);
     });
-    getStreamInfo(provider: Stream.animepahe);
+    getEpisode(
+      provider: Stream.animepahe,
+      episode: currentEpisode!,
+    );
     super.didChangeDependencies();
   }
 
@@ -169,44 +158,43 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                       const SizedBox(
                         width: 10,
                       ),
-                      if (fetchedData != null)
-                        Flexible(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                "Currently Watching",
-                                style: Theme.of(context).textTheme.caption,
-                              ),
-                              const SizedBox(
-                                height: 3,
-                              ),
-                              Text(
-                                fetchedData!["title"]["romaji"],
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                "Episode",
-                                style: Theme.of(context).textTheme.caption,
-                              ),
-                              const SizedBox(
-                                height: 3,
-                              ),
-                              Text(
-                                currentEpisode.toString(),
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
-                            ],
-                          ),
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                              "Currently Watching",
+                              style: Theme.of(context).textTheme.caption,
+                            ),
+                            const SizedBox(
+                              height: 3,
+                            ),
+                            Text(
+                              widget.title,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              "Episode",
+                              style: Theme.of(context).textTheme.caption,
+                            ),
+                            const SizedBox(
+                              height: 3,
+                            ),
+                            Text(
+                              currentEpisode.toString(),
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                          ],
                         ),
+                      ),
                     ],
                   ),
                 ),

@@ -96,6 +96,8 @@ class HomeScreen extends StatelessWidget {
                                           episode: data["episode"],
                                           details: json.decode(data["details"]),
                                           position: data["position"],
+                                          //Uncomment this is using video_player_screen_animepahe.dart file"
+                                          // title: data["title"]["romaji"],
                                         ),
                                       ),
                                     );

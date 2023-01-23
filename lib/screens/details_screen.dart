@@ -32,6 +32,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
         (ModalRoute.of(context)?.settings.arguments
             as Map<String, dynamic>)["id"],
       )),
+      //Uncomment this is using video_player_screen_animepahe.dart file"
+      // provider: Stream.animepahe,
     ).then(
       (value) {
         setState(() {
@@ -89,6 +91,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                             episode: data["number"],
                                             image: fetchedData!["image"],
                                             id: fetchedData!["id"],
+                                            //Uncomment this is using video_player_screen_animepahe.dart file" also above in didChangeDependencies()
+                                            // title: fetchedData!["title"]
+                                            //     ["romaji"],
                                           ),
                                         ),
                                       );
@@ -214,6 +219,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           episode: data["number"],
                           image: fetchedData!["image"],
                           id: fetchedData!["id"],
+                          //Uncomment this is using video_player_screen_animepahe.dart file"
+                          // title: fetchedData!["title"]["romaji"],
                         ),
                       ),
                     ),
