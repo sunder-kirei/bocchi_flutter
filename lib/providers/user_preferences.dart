@@ -49,14 +49,12 @@ class Watchlist with ChangeNotifier {
     required String episodeImage,
     required String image,
     required int episode,
-    required int position,
   }) async {
     await DBHelper.insertHistory(
       itemId: itemId,
       episodeImage: episodeImage,
       image: image,
       episode: episode,
-      position: position,
     );
     await fetchWatchlist();
     return;

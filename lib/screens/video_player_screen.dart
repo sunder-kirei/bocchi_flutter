@@ -52,7 +52,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       episodeImage: details![episode!]["image"],
       itemId: (ModalRoute.of(context)!.settings.arguments
           as Map<String, dynamic>)["id"],
-      position: 0,
     );
     setState(() {
       isLoading = true;
