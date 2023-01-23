@@ -49,7 +49,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       episode: episode,
       image: (ModalRoute.of(context)!.settings.arguments
           as Map<String, dynamic>)["image"],
-      episodeImage: details![episode!]["image"],
+      episodeImage: details![episode]["image"],
       itemId: (ModalRoute.of(context)!.settings.arguments
           as Map<String, dynamic>)["id"],
     );
