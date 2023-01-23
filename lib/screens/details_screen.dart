@@ -28,9 +28,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
   @override
   void didChangeDependencies() {
     HttpHelper.getInfo(
-            malID: (int.parse((ModalRoute.of(context)?.settings.arguments
-                as Map<String, dynamic>)["id"])))
-        .then(
+      malID: (int.parse(
+        (ModalRoute.of(context)?.settings.arguments
+            as Map<String, dynamic>)["id"],
+      )),
+    ).then(
       (value) {
         setState(() {
           fetchedData = value;

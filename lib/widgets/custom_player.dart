@@ -123,6 +123,7 @@ class _CustomPlayerState extends State<CustomPlayer> {
     required List<dynamic> streams,
   }) {
     return ChewieController(
+      allowedScreenSleep: false,
       videoPlayerController: _videoPlayerController!,
       showControlsOnInitialize: true,
       autoPlay: true,
