@@ -381,20 +381,35 @@ class _CustomControlsState extends State<CustomControls>
     controller.seekTo(Duration(milliseconds: math.min(skip, end)));
   }
 
-  AnimatedOpacity _buildSeekButton({
+  Widget _buildSeekButton({
     required IconData iconData,
-    required Function callback,
+    required VoidCallback callback,
     required String tooltip,
+    required bool show,
   }) {
-    return AnimatedOpacity(
-      opacity: notifier.hideStuff ? 0.0 : 1.0,
-      duration: const Duration(milliseconds: 300),
-      child: IconButton(
-        onPressed: () {
-          callback();
-        },
-        icon: Icon(iconData),
-        tooltip: tooltip,
+    return ColoredBox(
+      color: Colors.transparent,
+      child: Center(
+        child: UnconstrainedBox(
+          child: AnimatedOpacity(
+            opacity: show ? 1.0 : 0.0,
+            duration: const Duration(milliseconds: 300),
+            child: DecoratedBox(
+              decoration: const BoxDecoration(
+                color: Colors.black54,
+                shape: BoxShape.circle,
+              ),
+              // Always set the iconSize on the IconButton, not on the Icon itself:
+              // https://github.com/flutter/flutter/issues/52980
+              child: IconButton(
+                iconSize: 25,
+                padding: const EdgeInsets.all(12.0),
+                icon: Icon(iconData),
+                onPressed: callback,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -406,6 +421,7 @@ class _CustomControlsState extends State<CustomControls>
 
     return GestureDetector(
       onTap: () {
+        print("object");
         if (_latestValue.isPlaying) {
           if (_displayTapped) {
             setState(() {
@@ -429,6 +445,7 @@ class _CustomControlsState extends State<CustomControls>
             callback: _skipBack,
             iconData: Icons.keyboard_double_arrow_left_rounded,
             tooltip: "Seek reverse",
+            show: showPlayButton,
           ),
           CenterPlayButton(
             backgroundColor: Colors.black54,
@@ -442,6 +459,7 @@ class _CustomControlsState extends State<CustomControls>
             callback: _skipForward,
             iconData: Icons.keyboard_double_arrow_right_rounded,
             tooltip: "Seek forward",
+            show: showPlayButton,
           ),
         ],
       ),
