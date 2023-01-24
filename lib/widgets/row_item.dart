@@ -1,3 +1,6 @@
+import 'package:provider/provider.dart';
+
+import '../providers/user_preferences.dart';
 import '../screens/details_screen.dart';
 import '../widgets/hero_image.dart';
 import 'package:flutter/material.dart';
@@ -21,13 +24,20 @@ class RowItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final prefferedTitle = Provider.of<Watchlist>(context).prefferedTitle;
+    PrefferedTitle subtitle;
+    if (prefferedTitle == PrefferedTitle.english) {
+      subtitle = PrefferedTitle.romaji;
+    } else {
+      subtitle = PrefferedTitle.english;
+    }
     return Card(
       child: ClipRRect(
         borderRadius: BorderRadius.circular(5),
         child: GridTile(
           footer: GridTileBar(
             title: Text(
-              title["romaji"],
+              title[prefferedTitle.name] ?? title[subtitle.name],
               maxLines: 2,
               softWrap: true,
               overflow: TextOverflow.ellipsis,

@@ -86,8 +86,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     int episode = 1,
     Duration duration = Duration.zero,
   }) {
+    double position = 100 * (episode - 1);
+    if (_controller.offset == position) return;
     _controller.animateTo(
-      100 * (episode - 1),
+      position,
       duration: duration == Duration.zero
           ? Duration(
               milliseconds: ((episode) * 60),

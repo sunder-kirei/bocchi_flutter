@@ -1,4 +1,5 @@
 import 'package:anime_api/providers/user_preferences.dart';
+import 'package:anime_api/widgets/custom_controls.dart';
 import 'package:chewie/chewie.dart';
 import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
@@ -135,6 +136,7 @@ class _CustomPlayerState extends State<CustomPlayer> {
         DeviceOrientation.landscapeLeft,
         DeviceOrientation.landscapeRight,
       ],
+      customControls: const CustomControls(),
       startAt: position,
       maxScale: 2,
       aspectRatio: 16 / 9,

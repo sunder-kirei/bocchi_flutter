@@ -1,4 +1,6 @@
+import 'package:anime_api/providers/user_preferences.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class InfoPane extends StatelessWidget {
   final Map<String, dynamic> title;
@@ -17,6 +19,14 @@ class InfoPane extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final prefferedTitle = Provider.of<Watchlist>(context).prefferedTitle;
+    PrefferedTitle subtitle;
+    if (prefferedTitle == PrefferedTitle.english) {
+      subtitle = PrefferedTitle.romaji;
+    } else {
+      subtitle = PrefferedTitle.english;
+    }
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -26,7 +36,7 @@ class InfoPane extends StatelessWidget {
           style: Theme.of(context).textTheme.caption,
         ),
         Text(
-          title["romaji"],
+          title[prefferedTitle.name],
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           style: Theme.of(context).textTheme.titleSmall,
@@ -36,9 +46,9 @@ class InfoPane extends StatelessWidget {
             "Alternate Title",
             style: Theme.of(context).textTheme.caption,
           ),
-        if (synonyms.isNotEmpty || title["english"] != null)
+        if (synonyms.isNotEmpty || title[subtitle.name] != null)
           Text(
-            title["english"] ?? synonyms[0],
+            title[subtitle.name] ?? synonyms[0],
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.titleSmall,

@@ -56,13 +56,17 @@ class CustomDrawer extends StatelessWidget {
                   const Spacer(),
                   const Divider(thickness: 1),
                   ListTile(
-                    title: Text("Preferences"),
-                    leading: Icon(Icons.settings),
+                    title: const Text("Preferences"),
+                    leading: const Icon(Icons.settings),
                     style: ListTileStyle.drawer,
                     onTap: () {
+                      Scaffold.of(context).closeDrawer();
                       showModalBottomSheet(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
                         context: context,
-                        builder: (context) => PreferencesModal(),
+                        builder: (context) => const PreferencesModal(),
                       );
                     },
                   ),

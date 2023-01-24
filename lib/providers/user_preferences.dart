@@ -2,10 +2,16 @@ import 'package:anime_api/helpers/db_helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+enum PrefferedTitle {
+  english,
+  romaji,
+}
+
 class Watchlist with ChangeNotifier {
   List<Map<String, dynamic>> watchlist = [];
   List<Map<String, dynamic>> history = [];
   String preferredQuality = "720";
+  PrefferedTitle prefferedTitle = PrefferedTitle.english;
 
   Future<void> setQuality({required String quality}) async {
     final preferences = await SharedPreferences.getInstance();
@@ -19,6 +25,26 @@ class Watchlist with ChangeNotifier {
     final preferences = await SharedPreferences.getInstance();
     final data = preferences.getString("preferredQuality");
     preferredQuality = data ?? "360";
+    notifyListeners();
+    return;
+  }
+
+  Future<void> setTitle({required PrefferedTitle title}) async {
+    final preferences = await SharedPreferences.getInstance();
+    preferences.setInt("prefferedTitle", title.index);
+    prefferedTitle = title;
+    notifyListeners();
+    return;
+  }
+
+  Future<void> fetchTitle() async {
+    final preferences = await SharedPreferences.getInstance();
+    final data = preferences.getInt("prefferedTitle");
+    if (data == null) {
+      prefferedTitle = PrefferedTitle.values[0];
+    } else {
+      prefferedTitle = PrefferedTitle.values[data];
+    }
     notifyListeners();
     return;
   }
@@ -41,6 +67,7 @@ class Watchlist with ChangeNotifier {
     await fetchWatchlist();
     await fetchHistory();
     await fetchQuality();
+    await fetchTitle();
     return;
   }
 

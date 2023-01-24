@@ -1,6 +1,5 @@
 import 'package:anime_api/providers/user_preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 
 class PreferencesModal extends StatelessWidget {
@@ -22,7 +21,7 @@ class PreferencesModal extends StatelessWidget {
     return Consumer<Watchlist>(
       builder: (context, value, child) {
         final data = value.preferredQuality;
-
+        final prefferedTitle = value.prefferedTitle.name;
         return Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: 8,
@@ -36,6 +35,41 @@ class PreferencesModal extends StatelessWidget {
                 "Video quality preferences",
                 style: Theme.of(context).textTheme.titleLarge,
               ),
+              const SizedBox(height: 20),
+              Flex(
+                direction: Axis.horizontal,
+                children: [
+                  _buildButton(
+                    "360p",
+                    () => callback(context, "360"),
+                    data == "360",
+                    context,
+                  ),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  _buildButton(
+                    "720p",
+                    () => callback(context, "720"),
+                    data == "720",
+                    context,
+                  ),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  _buildButton(
+                    "1080p",
+                    () => callback(context, "1080"),
+                    data == "1080",
+                    context,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Text(
+                "Title preference",
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
               const SizedBox(
                 height: 20,
               ),
@@ -43,31 +77,27 @@ class PreferencesModal extends StatelessWidget {
                 direction: Axis.horizontal,
                 children: [
                   _buildButton(
-                    "360",
-                    () => callback(context, "360"),
-                    value.preferredQuality == "360",
+                    "English",
+                    () {
+                      value.setTitle(title: PrefferedTitle.english);
+                    },
+                    prefferedTitle == "english",
                     context,
                   ),
                   const SizedBox(
                     width: 8,
                   ),
                   _buildButton(
-                    "720",
-                    () => callback(context, "720"),
-                    value.preferredQuality == "720",
-                    context,
-                  ),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  _buildButton(
-                    "1080",
-                    () => callback(context, "1080"),
-                    value.preferredQuality == "1080",
+                    "Romaji",
+                    () {
+                      value.setTitle(title: PrefferedTitle.romaji);
+                    },
+                    prefferedTitle == "romaji",
                     context,
                   ),
                 ],
-              )
+              ),
+              const SizedBox(height: 12),
             ],
           ),
         );
@@ -89,7 +119,7 @@ class PreferencesModal extends StatelessWidget {
                 side: BorderSide(color: Theme.of(context).colorScheme.primary),
               )
             : null,
-        child: Text("${value}p"),
+        child: Text(value),
       ),
     );
   }
