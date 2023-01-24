@@ -22,6 +22,16 @@ class DBHelper {
     return sql;
   }
 
+  static Future<Map<String, List<Map<String, dynamic>>>> getDatabase() async {
+    final sql = await openDB();
+    final watchlist = await sql.query(tableName);
+    final history = await sql.query(historyTable);
+    return {
+      "watchlist": watchlist,
+      "histoy": history,
+    };
+  }
+
   static Future<List<Map<String, dynamic>>> queryAll() async {
     final sql = await openDB();
     final data = await sql.query(tableName);

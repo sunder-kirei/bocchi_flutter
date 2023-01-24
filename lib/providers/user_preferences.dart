@@ -13,6 +13,25 @@ class Watchlist with ChangeNotifier {
   String preferredQuality = "720";
   PrefferedTitle prefferedTitle = PrefferedTitle.english;
 
+  Future<void> fetchSharedPreferences() async {
+    final preferences = await SharedPreferences.getInstance();
+    preferredQuality = preferences.getString("preferredQuality") ?? "360";
+    final data = preferences.getInt("prefferedTitle");
+    if (data == null) {
+      prefferedTitle = PrefferedTitle.values[0];
+    } else {
+      prefferedTitle = PrefferedTitle.values[data];
+    }
+    return;
+  }
+
+  Future<void> fetchDatabase() async {
+    final database = await DBHelper.getDatabase();
+    watchlist = database["watchlist"]!;
+    history = database["history"]!;
+    return;
+  }
+
   Future<void> setQuality({required String quality}) async {
     final preferences = await SharedPreferences.getInstance();
     preferences.setString("preferredQuality", quality);
@@ -64,10 +83,9 @@ class Watchlist with ChangeNotifier {
   }
 
   Future<void> fetchAll() async {
-    await fetchWatchlist();
-    await fetchHistory();
-    await fetchQuality();
-    await fetchTitle();
+    await fetchDatabase();
+    await fetchSharedPreferences();
+    notifyListeners();
     return;
   }
 
