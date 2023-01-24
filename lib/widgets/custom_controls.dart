@@ -387,25 +387,27 @@ class _CustomControlsState extends State<CustomControls>
     required String tooltip,
     required bool show,
   }) {
-    return ColoredBox(
-      color: Colors.transparent,
-      child: Center(
-        child: UnconstrainedBox(
-          child: AnimatedOpacity(
-            opacity: show ? 1.0 : 0.0,
-            duration: const Duration(milliseconds: 300),
-            child: DecoratedBox(
-              decoration: const BoxDecoration(
-                color: Colors.black54,
-                shape: BoxShape.circle,
-              ),
-              // Always set the iconSize on the IconButton, not on the Icon itself:
-              // https://github.com/flutter/flutter/issues/52980
-              child: IconButton(
-                iconSize: 25,
-                padding: const EdgeInsets.all(12.0),
-                icon: Icon(iconData),
-                onPressed: callback,
+    return Flexible(
+      child: ColoredBox(
+        color: Colors.transparent,
+        child: Center(
+          child: UnconstrainedBox(
+            child: AnimatedOpacity(
+              opacity: show ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 300),
+              child: DecoratedBox(
+                decoration: const BoxDecoration(
+                  color: Colors.black54,
+                  shape: BoxShape.circle,
+                ),
+                // Always set the iconSize on the IconButton, not on the Icon itself:
+                // https://github.com/flutter/flutter/issues/52980
+                child: IconButton(
+                  iconSize: 25,
+                  padding: const EdgeInsets.all(12.0),
+                  icon: Icon(iconData),
+                  onPressed: callback,
+                ),
               ),
             ),
           ),
@@ -438,7 +440,8 @@ class _CustomControlsState extends State<CustomControls>
           });
         }
       },
-      child: Row(
+      child: Flex(
+        direction: Axis.horizontal,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _buildSeekButton(
