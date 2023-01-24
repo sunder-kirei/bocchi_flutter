@@ -423,7 +423,6 @@ class _CustomControlsState extends State<CustomControls>
 
     return GestureDetector(
       onTap: () {
-        print("object");
         if (_latestValue.isPlaying) {
           if (_displayTapped) {
             setState(() {

@@ -232,6 +232,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   final data = widget.details[index];
                   return InkWell(
                     onTap: () {
+                      if (data["number"] == currentEpisode) return;
                       getEpisode(
                         episode: data["number"],
                         provider: Stream.animepahe,
