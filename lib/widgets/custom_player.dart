@@ -10,11 +10,15 @@ class CustomPlayer extends StatefulWidget {
   final List<dynamic> streams;
   final Function callback;
   final int initialPosition;
+  final VoidCallback nextEpisode;
+  final bool isLast;
   const CustomPlayer({
     super.key,
     required this.streams,
     required this.callback,
     required this.initialPosition,
+    required this.nextEpisode,
+    required this.isLast,
   });
 
   @override
@@ -136,7 +140,10 @@ class _CustomPlayerState extends State<CustomPlayer> {
         DeviceOrientation.landscapeLeft,
         DeviceOrientation.landscapeRight,
       ],
-      customControls: const CustomControls(),
+      customControls: CustomControls(
+        callback: widget.nextEpisode,
+        isLast: widget.isLast,
+      ),
       startAt: position,
       maxScale: 2,
       aspectRatio: 16 / 9,

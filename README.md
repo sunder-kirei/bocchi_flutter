@@ -8,7 +8,7 @@ So, basically this is an Anime streaming application. It uses `consumet` API und
 
 I chose gogoanime to display episode info because animepahe, simply, has no data about episodes, whatsoever. I would have gone with gogoanime's stream service as well, only if it was not broken to begin with. Well, animepahe was also broken but with a little string manipulation, I got it to work😅.
 
-If you were to sacrifice info about episodes like their title and description, this app can be made a LOT faster. Since, I have to fetch both animepahe and gogoanime endpoints, the app is a little slow, but nothing deal-breaking. But if you would like to have a little extra speed, just rename the `video_player_screen_animepahe.dart` to `video_player_screen.dart`, and delete the old one, build the app, and it should work just fine, OR, I can just add an in-app switch!
+If you were to sacrifice info about episodes like their title and description, this app can be made a LOT faster. Since, I have to fetch both animepahe and gogoanime endpoints, the app is a little slow, but nothing deal-breaking.
 
 ---
 

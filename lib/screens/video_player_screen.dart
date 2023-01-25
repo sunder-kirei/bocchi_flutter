@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:anime_api/helpers/http_helper.dart';
 import 'package:anime_api/providers/user_preferences.dart';
@@ -60,11 +61,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
     await getEpisode(
       episode: currentEpisode!,
-      provider: provider,
     );
   }
 
-  Future<void> getEpisode({int episode = 1, required Stream provider}) async {
+  Future<void> getEpisode({int episode = 1}) async {
     Provider.of<Watchlist>(
       context,
       listen: false,
@@ -88,7 +88,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     }
     final response = await HttpHelper.getVideo(
       episodeID: fetchedData!["episodes"][episode - 1]["id"],
-      provider: provider,
     );
     setState(() {
       videoSources = response["sources"];
@@ -101,12 +100,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     Duration duration = Duration.zero,
   }) {
     double position = 100 * (episode - 1);
-    if (_controller.offset == position) return;
+    _controller.jumpTo((position ~/ 50) * 50);
     _controller.animateTo(
-      position,
+      min(position, _controller.position.maxScrollExtent),
       duration: duration == Duration.zero
           ? Duration(
-              milliseconds: ((episode) * 60),
+              milliseconds: min(3000, ((episode) * 60)),
             )
           : duration,
       curve: Curves.easeOut,
@@ -149,6 +148,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    int currentLength =
+        localDetail == null ? widget.details.length : localDetail!.length;
     return Scaffold(
       body: SafeArea(
         child: Flex(
@@ -166,6 +167,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                           initialPosition: currentEpisode == widget.episode
                               ? widget.position
                               : 0,
+                          nextEpisode: () {
+                            getEpisode(
+                              episode: currentEpisode == currentLength
+                                  ? currentLength + 1
+                                  : currentEpisode! + 1,
+                            );
+                          },
+                          isLast: currentEpisode == currentLength,
                         )
                       : Container(
                           color: Theme.of(context).colorScheme.surface,
@@ -255,7 +264,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                       if (data["number"] == currentEpisode) return;
                       getEpisode(
                         episode: data["number"],
-                        provider: Stream.animepahe,
                       );
                     },
                     child: Container(
@@ -275,7 +283,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     ),
                   );
                 },
-                itemCount: widget.details.length,
+                itemCount: localDetail == null
+                    ? widget.details.length
+                    : localDetail!.length,
               ),
             )
           ],

@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:anime_api/widgets/custom_play_button.dart';
 import 'package:chewie/src/center_play_button.dart';
 import 'package:chewie/src/chewie_player.dart';
 import 'package:chewie/src/chewie_progress_colors.dart';
@@ -20,10 +21,14 @@ import 'package:video_player/video_player.dart';
 class CustomControls extends StatefulWidget {
   const CustomControls({
     this.showPlayButton = true,
+    required this.callback,
+    required this.isLast,
     Key? key,
   }) : super(key: key);
 
   final bool showPlayButton;
+  final VoidCallback callback;
+  final bool isLast;
 
   @override
   State<StatefulWidget> createState() {
@@ -423,7 +428,6 @@ class _CustomControlsState extends State<CustomControls>
 
     return GestureDetector(
       onTap: () {
-        print("object");
         if (_latestValue.isPlaying) {
           if (_displayTapped) {
             setState(() {
@@ -450,13 +454,14 @@ class _CustomControlsState extends State<CustomControls>
             tooltip: "Seek reverse",
             show: showPlayButton,
           ),
-          CenterPlayButton(
+          CustomPlayButton(
             backgroundColor: Colors.black54,
             iconColor: Colors.white,
             isFinished: isFinished,
             isPlaying: controller.value.isPlaying,
             show: showPlayButton,
             onPressed: _playPause,
+            isLast: widget.isLast,
           ),
           _buildSeekButton(
             callback: _skipForward,
@@ -607,7 +612,9 @@ class _CustomControlsState extends State<CustomControls>
           });
         } else {
           if (isFinished) {
-            controller.seekTo(Duration.zero);
+            chewieController.exitFullScreen();
+            widget.callback();
+            // controller.seekTo(Duration.zero);
           }
           controller.play();
         }
