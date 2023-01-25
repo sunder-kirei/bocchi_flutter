@@ -99,7 +99,7 @@ class _CustomPlayerState extends State<CustomPlayer> {
       return {
         ...item,
         "url":
-            "${item["url"].toString().substring(0, 8)}na${item["url"].toString().substring(10, 15)}files${item["url"].toString().substring(20)}",
+            "${item["url"].toString().substring(0, 15)}files${item["url"].toString().substring(20)}",
       };
     }).toList();
 

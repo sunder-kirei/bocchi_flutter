@@ -31,9 +31,21 @@ class VideoPlayerScreen extends StatefulWidget {
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   final ScrollController _controller = ScrollController();
   Map<String, dynamic>? fetchedData;
+  List<dynamic>? localDetail;
   List<dynamic>? videoSources;
   int? currentEpisode;
   bool isLoading = true;
+
+  void fetchDetails() {
+    HttpHelper.getInfo(
+      malID: int.parse(widget.id),
+      provider: Stream.gogoanime,
+    ).then((value) {
+      setState(() {
+        localDetail = value["episodes"];
+      });
+    });
+  }
 
   Future<void> getStreamInfo({required Stream provider}) async {
     final response = await HttpHelper.getInfo(
@@ -43,6 +55,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     setState(() {
       fetchedData = response;
     });
+
+    if (fetchedData!["episodes"].length != widget.details) fetchDetails();
 
     await getEpisode(
       episode: currentEpisode!,
@@ -109,7 +123,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       image: widget.image,
       episodeImage: widget.details[episode - 1]["image"],
       itemId: widget.id,
-      details: json.encode(widget.details),
+      details: localDetail == null
+          ? json.encode(widget.details)
+          : json.encode(localDetail),
       position: position ?? 0,
     );
   }
@@ -147,7 +163,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                       ? CustomPlayer(
                           streams: videoSources!,
                           callback: callback,
-                          initialPosition: widget.position,
+                          initialPosition: currentEpisode == widget.episode
+                              ? widget.position
+                              : 0,
                         )
                       : Container(
                           color: Theme.of(context).colorScheme.surface,
@@ -229,7 +247,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               child: ListView.builder(
                 controller: _controller,
                 itemBuilder: (context, index) {
-                  final data = widget.details[index];
+                  final data = localDetail == null
+                      ? widget.details[index]
+                      : localDetail![index];
                   return InkWell(
                     onTap: () {
                       if (data["number"] == currentEpisode) return;
