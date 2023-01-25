@@ -62,6 +62,7 @@ class HomeScreen extends StatelessWidget {
                         .getHistory
                         .reversed
                         .toList()[index];
+                    final details = json.decode(data["details"]);
                     return ClipRRect(
                       borderRadius: BorderRadius.circular(5),
                       child: AspectRatio(
@@ -73,7 +74,7 @@ class HomeScreen extends StatelessWidget {
                                 footer: Container(
                                   color: Colors.black,
                                   child: Text(
-                                    "Episode ${data["episode"]}",
+                                    "Episode ${details[data["episode"]]["number"]}",
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
@@ -94,8 +95,9 @@ class HomeScreen extends StatelessWidget {
                                           id: data["id"],
                                           image: data["image"],
                                           episode: data["episode"],
-                                          details: json.decode(data["details"]),
+                                          details: details,
                                           position: data["position"],
+                                          title: data["title"],
                                           //Uncomment this is using video_player_screen_animepahe.dart file"
                                           // title: data["title"]["romaji"],
                                         ),

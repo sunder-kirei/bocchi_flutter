@@ -33,7 +33,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
             as Map<String, dynamic>)["id"],
       )),
       //Uncomment this is using video_player_screen_animepahe.dart file"
-      // provider: Stream.animepahe,
+      provider: Stream.animepahe,
     ).then(
       (value) {
         setState(() {
@@ -92,8 +92,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                             image: fetchedData!["image"],
                                             id: fetchedData!["id"],
                                             //Uncomment this is using video_player_screen_animepahe.dart file" also above in didChangeDependencies()
-                                            // title: fetchedData!["title"]
-                                            //     ["romaji"],
+                                            title: fetchedData!["title"]
+                                                ["romaji"],
                                           ),
                                         ),
                                       );
@@ -216,11 +216,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       CustomRoute(
                         builder: (context) => VideoPlayerScreen(
                           details: fetchedData!["episodes"],
-                          episode: data["number"],
+                          episode: index,
                           image: fetchedData!["image"],
                           id: fetchedData!["id"],
                           //Uncomment this is using video_player_screen_animepahe.dart file"
-                          // title: fetchedData!["title"]["romaji"],
+                          title: fetchedData!["title"]["romaji"],
                         ),
                       ),
                     ),

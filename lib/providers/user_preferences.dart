@@ -100,6 +100,7 @@ class Watchlist with ChangeNotifier {
     required int episode,
     required String details,
     required int position,
+    required String title,
   }) async {
     await DBHelper.insertHistory(
       itemId: itemId,
@@ -108,6 +109,7 @@ class Watchlist with ChangeNotifier {
       episode: episode,
       details: details,
       position: position,
+      title: title,
     );
     await fetchHistory();
     return;

@@ -14,7 +14,7 @@ class DBHelper {
           "CREATE TABLE $tableName (id TEXT PRIMARY KEY, romaji TEXT, image TEXT)",
         );
         await db.execute(
-          "CREATE TABLE $historyTable (id TEXT PRIMARY KEY, image TEXT, episode INTEGER, episodeImage TEXT, details TEXT, position INTEGER)",
+          "CREATE TABLE $historyTable (id TEXT PRIMARY KEY, image TEXT, episode INTEGER, episodeImage TEXT, details TEXT, position INTEGER, title TEXT)",
         );
       },
       version: 1,
@@ -85,6 +85,7 @@ class DBHelper {
     required int episode,
     required String details,
     required int position,
+    required String title,
   }) async {
     final sql = await openDB();
     final id = await sql.insert(
@@ -96,6 +97,7 @@ class DBHelper {
         "episodeImage": episodeImage,
         "details": details,
         "position": position,
+        "title": title,
       },
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
