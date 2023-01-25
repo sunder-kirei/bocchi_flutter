@@ -28,6 +28,7 @@ class CustomPlayer extends StatefulWidget {
 class _CustomPlayerState extends State<CustomPlayer> {
   int? quality;
   bool hasLoaded = false;
+  bool hasError = false;
 
   VideoPlayerController? _videoPlayerController;
   ChewieController? _controller;
@@ -111,7 +112,13 @@ class _CustomPlayerState extends State<CustomPlayer> {
 
     _videoPlayerController = VideoPlayerController.contentUri(url);
 
-    await _videoPlayerController!.initialize();
+    try {
+      await _videoPlayerController!.initialize();
+    } catch (error) {
+      setState(() {
+        hasError = true;
+      });
+    }
 
     _controller = customChewieController(
       streams: streams,
@@ -216,16 +223,25 @@ class _CustomPlayerState extends State<CustomPlayer> {
         await widget.callback(position: position?.inSeconds);
         return true;
       },
-      child: hasLoaded
-          ? Chewie(controller: _controller!)
-          : Container(
-              color: Theme.of(context).colorScheme.surface,
-              child: Center(
-                child: CircularProgressIndicator(
-                  color: Theme.of(context).colorScheme.onBackground,
-                ),
+      child: hasError
+          ? Container(
+              alignment: Alignment.center,
+              color: Theme.of(context).colorScheme.background,
+              child: const Text(
+                "Looks like the video is still processing,\n try again later",
+                textAlign: TextAlign.center,
               ),
-            ),
+            )
+          : hasLoaded
+              ? Chewie(controller: _controller!)
+              : Container(
+                  color: Theme.of(context).colorScheme.surface,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: Theme.of(context).colorScheme.onBackground,
+                    ),
+                  ),
+                ),
     );
   }
 }
