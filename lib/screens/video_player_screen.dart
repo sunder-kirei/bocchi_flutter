@@ -100,7 +100,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     Duration duration = Duration.zero,
   }) {
     double position = 100 * (episode - 1);
-    _controller.jumpTo((position ~/ 50) * 50);
+    if (episode * 60 > 3000) {
+      _controller.jumpTo(min(position, _controller.position.maxScrollExtent));
+    }
     _controller.animateTo(
       min(position, _controller.position.maxScrollExtent),
       duration: duration == Duration.zero
