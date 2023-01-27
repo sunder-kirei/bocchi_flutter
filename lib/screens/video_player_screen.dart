@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:anime_api/helpers/http_helper.dart';
 import 'package:anime_api/providers/user_preferences.dart';
+import 'package:anime_api/screens/details_screen.dart';
 import 'package:anime_api/widgets/custom_player.dart';
 import 'package:anime_api/widgets/custom_tile.dart';
 import 'package:anime_api/widgets/hero_image.dart';
@@ -193,9 +194,21 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   child: Flex(
                     direction: Axis.horizontal,
                     children: [
-                      HeroImage(
-                        imageUrl: widget.image,
-                        tag: widget.id,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pushNamed(
+                            DetailsScreen.routeName,
+                            arguments: {
+                              "id": widget.id,
+                              "image": widget.image,
+                              "tag": widget.id,
+                            },
+                          );
+                        },
+                        child: HeroImage(
+                          imageUrl: widget.image,
+                          tag: widget.id,
+                        ),
                       ),
                       const SizedBox(
                         width: 10,
