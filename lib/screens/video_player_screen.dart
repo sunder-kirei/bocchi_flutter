@@ -62,10 +62,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
     await getEpisode(
       episode: currentEpisode!,
+      position: widget.position,
     );
   }
 
-  Future<void> getEpisode({int episode = 1}) async {
+  Future<void> getEpisode({
+    int episode = 1,
+    required int position,
+  }) async {
     Provider.of<Watchlist>(
       context,
       listen: false,
@@ -75,7 +79,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       episodeImage: widget.details[episode - 1]["image"],
       itemId: widget.id,
       details: json.encode(widget.details),
-      position: 0,
+      position: position,
     );
     setState(() {
       isLoading = true;
@@ -175,6 +179,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                               episode: currentEpisode == currentLength
                                   ? currentLength + 1
                                   : currentEpisode! + 1,
+                              position: 0,
                             );
                           },
                           isLast: currentEpisode == currentLength,
@@ -279,6 +284,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                       if (data["number"] == currentEpisode) return;
                       getEpisode(
                         episode: data["number"],
+                        position: 0,
                       );
                     },
                     child: Container(
