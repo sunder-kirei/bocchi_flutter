@@ -281,7 +281,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   tag: data["id"].toString(),
                                   image: data["image"],
                                   id: data["id"].toString(),
-                                  disabled: data["episodes"] == null,
+                                  disabled: data["episodes"] == null ||
+                                      data["malId"] == null,
                                 ),
                                 Positioned(
                                   top: 20,

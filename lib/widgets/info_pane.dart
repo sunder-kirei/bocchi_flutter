@@ -36,7 +36,7 @@ class InfoPane extends StatelessWidget {
           style: Theme.of(context).textTheme.caption,
         ),
         Text(
-          title[prefferedTitle.name],
+          title[prefferedTitle.name] ?? title[subtitle.name] ?? "Unknown",
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           style: Theme.of(context).textTheme.titleSmall,
@@ -46,13 +46,12 @@ class InfoPane extends StatelessWidget {
             "Alternate Title",
             style: Theme.of(context).textTheme.caption,
           ),
-        if (synonyms.isNotEmpty || title[subtitle.name] != null)
-          Text(
-            title[subtitle.name] ?? synonyms[0],
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
+        Text(
+          title[subtitle.name] ?? synonyms[0] ?? "Unknown",
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
         Text(
           "Release Date",
           style: Theme.of(context).textTheme.caption,

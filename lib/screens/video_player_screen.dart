@@ -201,8 +201,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          Navigator.of(context).pushNamed(
+                          Navigator.of(context).pushNamedAndRemoveUntil(
                             DetailsScreen.routeName,
+                            (route) {
+                              return route.isFirst;
+                            },
                             arguments: {
                               "id": widget.id,
                               "image": widget.image,

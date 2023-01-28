@@ -4,7 +4,6 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:anime_api/widgets/custom_play_button.dart';
-import 'package:chewie/src/center_play_button.dart';
 import 'package:chewie/src/chewie_player.dart';
 import 'package:chewie/src/chewie_progress_colors.dart';
 import 'package:chewie/src/helpers/utils.dart';
