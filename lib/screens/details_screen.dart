@@ -85,16 +85,32 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                       final data = fetchedData!["episodes"][0];
                                       Navigator.of(context).push(
                                         CustomRoute(
-                                          builder: (context) =>
-                                              VideoPlayerScreen(
-                                            details: fetchedData!["episodes"],
-                                            episode: data["number"],
-                                            image: fetchedData!["image"],
-                                            id: fetchedData!["id"],
-                                            //Uncomment this is using video_player_screen_animepahe.dart file" also above in didChangeDependencies()
-                                            // title: fetchedData!["title"]
-                                            //     ["romaji"],
-                                          ),
+                                          builder: (context) {
+                                            final history =
+                                                Provider.of<Watchlist>(context)
+                                                    .getHistory;
+
+                                            final index = history.indexWhere(
+                                                (item) =>
+                                                    item["id"] ==
+                                                    fetchedData!["id"]);
+                                            print(index);
+                                            print(history);
+                                            return VideoPlayerScreen(
+                                              details: fetchedData!["episodes"],
+                                              episode: index != -1
+                                                  ? history[index]["episode"]
+                                                  : data["number"],
+                                              image: fetchedData!["image"],
+                                              id: fetchedData!["id"],
+                                              position: index != -1
+                                                  ? history[index]["position"]
+                                                  : 0,
+                                              //Uncomment this is using video_player_screen_animepahe.dart file" also above in didChangeDependencies()
+                                              // title: fetchedData!["title"]
+                                              //     ["romaji"],
+                                            );
+                                          },
                                         ),
                                       );
                                     },
