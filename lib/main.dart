@@ -38,10 +38,10 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
+    // SystemChrome.setPreferredOrientations([
+    //   DeviceOrientation.landscapeLeft,
+    //   // DeviceOrientation.landscapeRight,
+    // ]);
     return ChangeNotifierProvider(
         create: (context) => Watchlist(),
         builder: (context, _) => FutureBuilder(
@@ -50,32 +50,38 @@ class _MyAppState extends State<MyApp> {
                 if (snapshot.connectionState == ConnectionState.done) {
                   FlutterNativeSplash.remove();
                 }
-                return MaterialApp(
-                  debugShowCheckedModeBanner: false,
-                  scrollBehavior: const ScrollBehavior(
-                    // ignore: deprecated_member_use
-                    androidOverscrollIndicator:
-                        AndroidOverscrollIndicator.stretch,
-                  ),
-                  darkTheme: ThemeData.dark().copyWith(
-                    colorScheme: const ColorScheme.dark().copyWith(
-                      primary: Colors.pinkAccent,
+                return Shortcuts(
+                  shortcuts: {
+                    LogicalKeySet(LogicalKeyboardKey.select): ActivateIntent(),
+                  },
+                  child: MaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    scrollBehavior: const ScrollBehavior(
+                      // ignore: deprecated_member_use
+                      androidOverscrollIndicator:
+                          AndroidOverscrollIndicator.stretch,
                     ),
-                    outlinedButtonTheme: OutlinedButtonThemeData(
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(45),
-                        textStyle: const TextStyle(
-                          fontSize: 16,
+                    darkTheme: ThemeData.dark().copyWith(
+                      colorScheme: const ColorScheme.dark().copyWith(
+                        primary: Colors.pinkAccent,
+                      ),
+                      outlinedButtonTheme: OutlinedButtonThemeData(
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(45),
+                          textStyle: const TextStyle(
+                            fontSize: 16,
+                          ),
                         ),
                       ),
                     ),
+                    themeMode: ThemeMode.dark,
+                    routes: {
+                      HomeScreen.routeName: (context) => const HomeScreen(),
+                      DetailsScreen.routeName: (context) =>
+                          const DetailsScreen(),
+                      SearchScreen.routeName: (context) => const SearchScreen(),
+                    },
                   ),
-                  themeMode: ThemeMode.dark,
-                  routes: {
-                    HomeScreen.routeName: (context) => const HomeScreen(),
-                    DetailsScreen.routeName: (context) => const DetailsScreen(),
-                    SearchScreen.routeName: (context) => const SearchScreen(),
-                  },
                 );
               },
             ));
