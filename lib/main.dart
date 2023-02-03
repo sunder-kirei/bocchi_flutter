@@ -38,10 +38,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    // SystemChrome.setPreferredOrientations([
-    //   DeviceOrientation.landscapeLeft,
-    //   // DeviceOrientation.landscapeRight,
-    // ]);
     return ChangeNotifierProvider(
         create: (context) => Watchlist(),
         builder: (context, _) => FutureBuilder(
@@ -52,7 +48,21 @@ class _MyAppState extends State<MyApp> {
                 }
                 return Shortcuts(
                   shortcuts: {
-                    LogicalKeySet(LogicalKeyboardKey.select): ActivateIntent(),
+                    LogicalKeySet(
+                      LogicalKeyboardKey.arrowUp,
+                    ): const SelectIntent(),
+                    LogicalKeySet(
+                      LogicalKeyboardKey.arrowDown,
+                    ): const SelectIntent(),
+                    LogicalKeySet(
+                      LogicalKeyboardKey.arrowLeft,
+                    ): const SelectIntent(),
+                    LogicalKeySet(
+                      LogicalKeyboardKey.arrowRight,
+                    ): const SelectIntent(),
+                    LogicalKeySet(
+                      LogicalKeyboardKey.select,
+                    ): const ActivateIntent(),
                   },
                   child: MaterialApp(
                     debugShowCheckedModeBanner: false,

@@ -3,14 +3,12 @@ import 'package:anime_api/providers/user_preferences.dart';
 import 'package:anime_api/screens/video_player_screen.dart';
 import 'package:anime_api/widgets/custom_tile.dart';
 import 'package:anime_api/widgets/row_item.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:html/parser.dart';
 import 'package:provider/provider.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 import '../helpers/http_helper.dart';
-import '../widgets/bocchi_rich_text.dart';
 import '../widgets/hero_image.dart';
 import '../widgets/info_pane.dart';
 
@@ -24,6 +22,7 @@ class DetailsScreen extends StatefulWidget {
 
 class _DetailsScreenState extends State<DetailsScreen> {
   Map<String, dynamic>? fetchedData;
+  bool focused = false;
 
   @override
   void didChangeDependencies() {
@@ -47,91 +46,81 @@ class _DetailsScreenState extends State<DetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const BocchiRichText(
-      //     fontSize: 20,
-      //   ),
-      // ),
       body: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // AspectRatio(
-                //   aspectRatio: 16 / 9,
-                //   child: fetchedData != null
-                //       ? Stack(
-                //           children: [
-                //             Positioned.fill(
-                //               child: FadeInImage(
-                //                 placeholder: MemoryImage(kTransparentImage),
-                //                 image: CachedNetworkImageProvider(
-                //                   fetchedData!["cover"],
-                //                 ),
-                //                 fit: BoxFit.cover,
-                //                 fadeInCurve: Curves.easeIn,
-                //                 fadeInDuration:
-                //                     const Duration(milliseconds: 300),
-                //               ),
-                //             ),
-                //             if (fetchedData!["episodes"].length != 0)
-                //               Positioned.fill(
-                //                 child: Material(
-                //                   color: Colors.transparent,
-                //                   child: IconButton(
-                //                     icon: const Icon(Icons.play_arrow_rounded),
-                //                     onPressed: () {
-                //                       final data = fetchedData!["episodes"][0];
-                //                       Navigator.of(context).push(
-                //                         CustomRoute(
-                //                           builder: (context) {
-                //                             final history =
-                //                                 Provider.of<Watchlist>(context)
-                //                                     .getHistory;
-
-                //                             final index = history.indexWhere(
-                //                                 (item) =>
-                //                                     item["id"] ==
-                //                                     fetchedData!["id"]);
-
-                //                             return VideoPlayerScreen(
-                //                               details: fetchedData!["episodes"],
-                //                               episode: index != -1
-                //                                   ? history[index]["episode"]
-                //                                   : data["number"],
-                //                               image: fetchedData!["image"],
-                //                               id: fetchedData!["id"],
-                //                               position: index != -1
-                //                                   ? history[index]["position"]
-                //                                   : 0,
-                //                               //Uncomment this is using video_player_screen_animepahe.dart file" also above in didChangeDependencies()
-                //                               // title: fetchedData!["title"]
-                //                               //     ["romaji"],
-                //                             );
-                //                           },
-                //                         ),
-                //                       );
-                //                     },
-                //                     iconSize: 80,
-                //                     splashRadius: 50,
-                //                   ),
-                //                 ),
-                //               )
-                //           ],
-                //         )
-                //       : Image.memory(kTransparentImage),
-                // ),
                 Row(
                   children: [
-                    SizedBox(
-                      width: 170,
-                      child: Card(
-                        child: HeroImage(
-                          imageUrl: (ModalRoute.of(context)?.settings.arguments
-                              as Map<String, dynamic>)["image"],
-                          tag: (ModalRoute.of(context)?.settings.arguments
-                              as Map<String, dynamic>)["tag"],
+                    Focus(
+                      // focusNode: _focusNode,
+                      onFocusChange: (value) {
+                        setState(() {
+                          focused = value;
+                        });
+                      },
+                      onKey: (node, event) {
+                        if (event.logicalKey == LogicalKeyboardKey.select) {
+                          final data = fetchedData!["episodes"][0];
+                          Navigator.of(context).push(
+                            CustomRoute(
+                              builder: (context) {
+                                final history =
+                                    Provider.of<Watchlist>(context).getHistory;
+                                final index = history.indexWhere(
+                                    (item) => item["id"] == fetchedData!["id"]);
+                                return VideoPlayerScreen(
+                                  details: fetchedData!["episodes"],
+                                  episode: index != -1
+                                      ? history[index]["episode"]
+                                      : data["number"],
+                                  image: fetchedData!["image"],
+                                  id: fetchedData!["id"],
+                                  position: index != -1
+                                      ? history[index]["position"]
+                                      : 0,
+                                );
+                              },
+                            ),
+                          );
+                          return KeyEventResult.handled;
+                        }
+                        return KeyEventResult.ignored;
+                      },
+
+                      child: SizedBox(
+                        width: 170,
+                        child: Card(
+                          child: Stack(
+                            children: [
+                              AnimatedScale(
+                                scale: focused ? 0.95 : 1,
+                                duration: const Duration(milliseconds: 200),
+                                child: HeroImage(
+                                  imageUrl: (ModalRoute.of(context)
+                                          ?.settings
+                                          .arguments
+                                      as Map<String, dynamic>)["image"],
+                                  tag: (ModalRoute.of(context)
+                                          ?.settings
+                                          .arguments
+                                      as Map<String, dynamic>)["tag"],
+                                ),
+                              ),
+                              Positioned.fill(
+                                child: AnimatedScale(
+                                  scale: focused ? 1.25 : 1,
+                                  duration: const Duration(milliseconds: 200),
+                                  child: const Icon(
+                                    Icons.play_arrow_rounded,
+                                    size: 50,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),

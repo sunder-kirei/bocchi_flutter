@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+// ignore: implementation_imports
 import 'package:chewie/src/animated_play_pause.dart';
-import 'package:flutter/material.dart';
 
 //Extension of CenteredPlayButton from Material Controls
 

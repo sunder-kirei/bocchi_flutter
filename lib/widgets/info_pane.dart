@@ -33,7 +33,7 @@ class InfoPane extends StatelessWidget {
       children: [
         Text(
           "Title",
-          style: Theme.of(context).textTheme.caption,
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         Text(
           title[prefferedTitle.name] ?? title[subtitle.name] ?? "Unknown",
@@ -44,7 +44,7 @@ class InfoPane extends StatelessWidget {
         if (synonyms.isNotEmpty)
           Text(
             "Alternate Title",
-            style: Theme.of(context).textTheme.caption,
+            style: Theme.of(context).textTheme.bodySmall,
           ),
         Text(
           title[subtitle.name] ?? synonyms[0] ?? "Unknown",
@@ -54,7 +54,7 @@ class InfoPane extends StatelessWidget {
         ),
         Text(
           "Release Date",
-          style: Theme.of(context).textTheme.caption,
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         Text(
           releaseDate != 0 ? releaseDate.toString() : "Unknown",
@@ -62,7 +62,7 @@ class InfoPane extends StatelessWidget {
         ),
         Text(
           "Studio",
-          style: Theme.of(context).textTheme.caption,
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         Text(
           studio,
@@ -70,7 +70,7 @@ class InfoPane extends StatelessWidget {
         ),
         Text(
           "MAL Rating",
-          style: Theme.of(context).textTheme.caption,
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         Text(
           rating != 0 ? rating.toString() : "Unknown",

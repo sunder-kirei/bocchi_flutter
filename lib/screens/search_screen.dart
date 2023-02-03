@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../helpers/http_helper.dart';
 import '../widgets/search_card.dart';
@@ -17,6 +18,7 @@ class _SearchScreenState extends State<SearchScreen> {
   TextEditingController? _controller;
   Map<String, dynamic>? fetchedData;
   final FocusNode _focusNode = FocusNode();
+  final FocusNode _searchFocus = FocusNode();
 
   void fetchData(String query) async {
     setState(() {
@@ -52,34 +54,39 @@ class _SearchScreenState extends State<SearchScreen> {
             padding: const EdgeInsets.all(5),
             child: Column(
               children: [
-                TextField(
-                  controller: _controller,
-                  keyboardType: TextInputType.text,
-                  textCapitalization: TextCapitalization.sentences,
-                  focusNode: _focusNode,
-                  onEditingComplete: () {
-                    _focusNode.unfocus();
-                    fetchData(_controller!.text);
+                Focus(
+                  onKey: (node, event) {
+                    if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                      _searchFocus.requestFocus();
+                    } else {
+                      _focusNode.requestFocus();
+                    }
+                    return KeyEventResult.handled;
                   },
-                  decoration: InputDecoration(hintText: "Search"),
+                  child: TextField(
+                    controller: _controller,
+                    keyboardType: TextInputType.text,
+                    textCapitalization: TextCapitalization.sentences,
+                    focusNode: _focusNode,
+                    onEditingComplete: () {
+                      _focusNode.unfocus();
+                      fetchData(_controller!.text);
+                    },
+                    decoration: const InputDecoration(hintText: "Search"),
+                  ),
                 ),
                 const SizedBox(
                   height: 5,
                 ),
                 const Divider(),
-                Focus(
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      if (!_focusNode.hasFocus) {
-                        _focusNode.requestFocus();
-                        return;
-                      }
-                      FocusScope.of(context).unfocus();
-                      fetchData(_controller!.text);
-                    },
-                    icon: const Icon(Icons.search_outlined),
-                    label: const Text("Search"),
-                  ),
+                OutlinedButton.icon(
+                  focusNode: _searchFocus,
+                  onPressed: () {
+                    FocusScope.of(context).unfocus();
+                    fetchData(_controller!.text);
+                  },
+                  icon: const Icon(Icons.search_outlined),
+                  label: const Text("Search"),
                 ),
                 const Divider(),
               ],

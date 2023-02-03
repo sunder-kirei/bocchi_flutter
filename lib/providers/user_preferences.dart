@@ -24,7 +24,7 @@ class Watchlist with ChangeNotifier {
   Future<void> fetchQuality() async {
     final preferences = await SharedPreferences.getInstance();
     final data = preferences.getString("preferredQuality");
-    preferredQuality = data ?? "360";
+    preferredQuality = data ?? "1080";
     notifyListeners();
     return;
   }
