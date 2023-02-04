@@ -70,6 +70,7 @@ class _CustomPlayerState extends State<CustomPlayer> {
         seconds: widget.initialPosition,
       ),
     );
+
     super.initState();
   }
 
@@ -139,13 +140,12 @@ class _CustomPlayerState extends State<CustomPlayer> {
       videoPlayerController: _videoPlayerController!,
       showControlsOnInitialize: true,
       autoPlay: true,
+      fullScreenByDefault: true,
       deviceOrientationsAfterFullScreen: [
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
+        DeviceOrientation.landscapeLeft,
       ],
       deviceOrientationsOnEnterFullScreen: [
         DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
       ],
       customControls: CustomControls(
         callback: widget.nextEpisode,

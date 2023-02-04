@@ -1,4 +1,5 @@
 import 'package:flutter_displaymode/flutter_displaymode.dart';
+import 'package:wakelock/wakelock.dart';
 
 import '../providers/user_preferences.dart';
 import '../screens/search_screen.dart';
@@ -12,6 +13,8 @@ import './screens/home_screen.dart';
 
 void main() {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  Wakelock.enable();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   runApp(const MyApp());
 }
