@@ -82,11 +82,11 @@ class Watchlist with ChangeNotifier {
   Future<void> addToWatchlist({
     required String id,
     required String image,
-    required String titleRomaji,
+    required String title,
   }) async {
     await DBHelper.insert(
       itemId: id,
-      titleRomaji: titleRomaji,
+      title: title,
       image: image,
     );
     await fetchWatchlist();
@@ -95,18 +95,16 @@ class Watchlist with ChangeNotifier {
 
   Future<void> addToHistory({
     required String itemId,
-    required String episodeImage,
     required String image,
     required int episode,
-    required String details,
+    required String title,
     required int position,
   }) async {
     await DBHelper.insertHistory(
       itemId: itemId,
-      episodeImage: episodeImage,
       image: image,
       episode: episode,
-      details: details,
+      title: title,
       position: position,
     );
     await fetchHistory();
@@ -124,7 +122,7 @@ class Watchlist with ChangeNotifier {
   Future<void> toggle({
     required String id,
     required String image,
-    required String titleRomaji,
+    required String title,
   }) async {
     bool isPresent = watchlist.indexWhere(
           (element) => element["id"] == id,
@@ -137,7 +135,7 @@ class Watchlist with ChangeNotifier {
     await addToWatchlist(
       id: id,
       image: image,
-      titleRomaji: titleRomaji,
+      title: title,
     );
     return;
   }

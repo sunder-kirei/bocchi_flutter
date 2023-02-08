@@ -1,3 +1,4 @@
+import 'package:anime_api/constants/app_colors.dart';
 import 'package:anime_api/providers/user_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -5,16 +6,18 @@ import 'package:provider/provider.dart';
 class InfoPane extends StatelessWidget {
   final Map<String, dynamic> title;
   final int releaseDate;
-  final List<dynamic> synonyms;
-  final String studio;
-  final int rating;
+  final List<dynamic> genres;
+  final String? season;
+  final String episodes;
+  final String status;
   const InfoPane({
     super.key,
     required this.title,
     required this.releaseDate,
-    required this.synonyms,
-    required this.studio,
-    required this.rating,
+    required this.genres,
+    this.season,
+    required this.episodes,
+    required this.status,
   });
 
   @override
@@ -30,6 +33,7 @@ class InfoPane extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           title[prefferedTitle.name] ?? title[subtitle.name] ?? "Unknown",
@@ -38,37 +42,81 @@ class InfoPane extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: Theme.of(context).textTheme.displayLarge,
         ),
-        
-        if (title[subtitle.name] != null || synonyms.isNotEmpty)
-          Text(
-            title[subtitle.name] ?? synonyms[0] ?? "Unknown",
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-        Text(
-          "Release Date",
-          style: Theme.of(context).textTheme.caption,
+        const SizedBox(
+          height: 10,
         ),
         Text(
-          releaseDate != 0 ? releaseDate.toString() : "Unknown",
-          style: Theme.of(context).textTheme.titleSmall,
+          genres.join(" | "),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Colors.grey,
+              ),
+        ),
+        const SizedBox(
+          height: 10,
         ),
         Text(
-          "Studio",
-          style: Theme.of(context).textTheme.caption,
+          "${season ?? ''} | ${releaseDate != 0 ? releaseDate.toString() : ''}",
+          style: Theme.of(context).textTheme.displayLarge,
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        Flex(
+          direction: Axis.horizontal,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Expanded(
+              child: InfoTile(
+                field: releaseDate != 0 ? releaseDate.toString() : '',
+                fieldTitle: "Year",
+              ),
+            ),
+            InfoTile(
+              field: episodes,
+              fieldTitle: "Episodes",
+            ),
+            Expanded(
+              child: InfoTile(
+                field: status,
+                fieldTitle: "Status",
+              ),
+            ),
+          ],
+        )
+      ],
+    );
+  }
+}
+
+class InfoTile extends StatelessWidget {
+  const InfoTile({
+    super.key,
+    required this.field,
+    required this.fieldTitle,
+  });
+
+  final String field;
+  final String fieldTitle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          fieldTitle,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Colors.grey,
+              ),
+        ),
+        const SizedBox(
+          height: 10,
         ),
         Text(
-          studio,
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        Text(
-          "MAL Rating",
-          style: Theme.of(context).textTheme.caption,
-        ),
-        Text(
-          rating != 0 ? rating.toString() : "Unknown",
-          style: Theme.of(context).textTheme.titleSmall,
+          field,
+          style: Theme.of(context).textTheme.displayLarge,
         ),
       ],
     );

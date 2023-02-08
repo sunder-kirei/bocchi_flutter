@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:anime_api/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +27,7 @@ class _DetailsScreenState extends State<DetailsScreen>
     with TickerProviderStateMixin {
   Map<String, dynamic>? fetchedData;
   late final AnimationController _animationController =
-      AnimationController(vsync: this, duration: Duration(milliseconds: 300))
+      AnimationController(vsync: this, duration: Duration(milliseconds: 500))
         ..forward();
   late final Animation<double> _animation = CurvedAnimation(
     parent: _animationController,
@@ -57,7 +60,37 @@ class _DetailsScreenState extends State<DetailsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final history = Provider.of<Watchlist>(context).getHistory;
+    int index = -1;
+    bool isPresent = false;
+    if (fetchedData != null) {
+      index = history.indexWhere((item) => item["id"] == fetchedData!["id"]);
+      isPresent = !(Provider.of<Watchlist>(context).getWatchlist.indexWhere(
+                (element) => element["id"] == fetchedData!["id"],
+              ) ==
+          -1);
+    }
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await Provider.of<Watchlist>(
+            context,
+            listen: false,
+          ).toggle(
+            id: fetchedData!["id"],
+            title: json.encode(fetchedData!["title"]),
+            image: fetchedData!["image"],
+          );
+        },
+        child: isPresent
+            ? Icon(
+                Icons.done_rounded,
+              )
+            : Icon(
+                Icons.history_outlined,
+              ),
+        tooltip: "Add to watchlist",
+      ),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -81,7 +114,9 @@ class _DetailsScreenState extends State<DetailsScreen>
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Colors.transparent,
+                              Theme.of(context)
+                                  .scaffoldBackgroundColor
+                                  .withOpacity(0.3),
                               Theme.of(context).scaffoldBackgroundColor
                             ],
                             begin: Alignment.topCenter,
@@ -91,81 +126,97 @@ class _DetailsScreenState extends State<DetailsScreen>
                       ),
                     ),
                   ),
+                  if (fetchedData != null)
+                    Positioned(
+                      bottom: 0,
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        child: InfoPane(
+                          status: fetchedData!["status"],
+                          episodes: fetchedData!["totalEpisodes"].toString(),
+                          season: fetchedData!["season"],
+                          genres: fetchedData!["genres"],
+                          releaseDate: fetchedData!["releaseDate"] ?? 0,
+                          title: fetchedData!["title"] ?? "Unknown",
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
           ),
           SliverToBoxAdapter(
-            child: Column(
+            child: Flex(
+              direction: Axis.vertical,
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
               children: [
-                SizedBox(
-                  height: 20,
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 5,
-                  ),
-                  height: 240,
-                  child: fetchedData == null
-                      ? Center(
-                          child: CircularProgressIndicator(
-                            color: Theme.of(context).colorScheme.onBackground,
-                          ),
-                        )
-                      : InfoPane(
-                          rating: fetchedData!["rating"] ?? 0,
-                          releaseDate: fetchedData!["releaseDate"] ?? 0,
-                          studio: fetchedData!["studios"].length != 0
-                              ? fetchedData!["studios"][0]
-                              : "Unknown",
-                          synonyms: fetchedData!["synonyms"] ?? "Unknown",
-                          title: fetchedData!["title"] ?? "Unknown",
-                        ),
-                ),
-                const Divider(
-                  height: 10,
+                const SizedBox(
+                  height: 30,
                 ),
                 if (fetchedData != null) ...[
-                  Buttons(fetchedData: fetchedData),
-                  const Divider(
-                    height: 10,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 6,
-                    ),
+                  ElevatedButton(
+                    onPressed: () {
+                      final data = fetchedData!["episodes"][0];
+                      Navigator.of(context).push(
+                        CustomRoute(
+                          builder: (context) {
+                            return VideoPlayerScreen(
+                              details: fetchedData!["episodes"],
+                              episode: index != -1
+                                  ? history[index]["episode"]
+                                  : data["number"],
+                              image: fetchedData!["image"],
+                              id: fetchedData!["id"],
+                              position:
+                                  index != -1 ? history[index]["position"] : 0,
+                            );
+                          },
+                        ),
+                      );
+                    },
                     child: Text(
-                      "Description",
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
+                      index != -1 ? "Continue Watching" : "Start Watching",
                     ),
+                  ),
+                  const SizedBox(
+                    height: 30,
                   ),
                   if (fetchedData!["description"] != null)
                     Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8.0,
-                        vertical: 5,
                       ),
-                      child: Text(
-                        parse(fetchedData!["description"]).body?.text as String,
-                        maxLines: 10,
+                      child: RichText(
+                        maxLines: 15,
                         overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall
-                            ?.copyWith(fontSize: 14),
+                        text: TextSpan(
+                          text: "Overview: ",
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    color: Colors.amber,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 13,
+                                  ),
+                          children: [
+                            TextSpan(
+                              text: parse(fetchedData!["description"])
+                                  .body
+                                  ?.text as String,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
+                                    color: Colors.grey,
+                                    fontSize: 13,
+                                  ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   const SizedBox(
                     height: 10,
-                  ),
-                  const Divider(
-                    height: 0,
-                    thickness: 1,
                   ),
                   if (fetchedData!["episodes"].length != 0)
                     Padding(
@@ -175,9 +226,10 @@ class _DetailsScreenState extends State<DetailsScreen>
                       ),
                       child: Text(
                         "Episodes",
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
+                        style:
+                            Theme.of(context).textTheme.displayLarge?.copyWith(
+                                  fontSize: 24,
+                                ),
                       ),
                     ),
                 ],
@@ -197,8 +249,6 @@ class _DetailsScreenState extends State<DetailsScreen>
                           episode: data["number"],
                           image: fetchedData!["image"],
                           id: fetchedData!["id"],
-                          //Uncomment this is using video_player_screen_animepahe.dart file"
-                          // title: fetchedData!["title"]["romaji"],
                         ),
                       ),
                     ),
@@ -228,9 +278,6 @@ class _DetailsScreenState extends State<DetailsScreen>
                     const SizedBox(
                       height: 10,
                     ),
-                    const Divider(
-                      height: 0,
-                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8.0,
@@ -238,9 +285,10 @@ class _DetailsScreenState extends State<DetailsScreen>
                       ),
                       child: Text(
                         "Related Media",
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
+                        style:
+                            Theme.of(context).textTheme.displayLarge?.copyWith(
+                                  fontSize: 24,
+                                ),
                       ),
                     ),
                     SizedBox(
@@ -285,7 +333,7 @@ class _DetailsScreenState extends State<DetailsScreen>
                                                 .substring(1),
                                         style: Theme.of(context)
                                             .textTheme
-                                            .titleSmall,
+                                            .titleMedium,
                                       ),
                                     ),
                                   ),
@@ -309,9 +357,6 @@ class _DetailsScreenState extends State<DetailsScreen>
                     const SizedBox(
                       height: 10,
                     ),
-                    const Divider(
-                      height: 0,
-                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8.0,
@@ -319,9 +364,10 @@ class _DetailsScreenState extends State<DetailsScreen>
                       ),
                       child: Text(
                         "Recommendations",
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
+                        style:
+                            Theme.of(context).textTheme.displayLarge?.copyWith(
+                                  fontSize: 24,
+                                ),
                       ),
                     ),
                     SizedBox(
@@ -366,7 +412,7 @@ class _DetailsScreenState extends State<DetailsScreen>
                                         data["type"],
                                         style: Theme.of(context)
                                             .textTheme
-                                            .titleSmall,
+                                            .titleMedium,
                                       ),
                                     ),
                                   ),
@@ -385,64 +431,6 @@ class _DetailsScreenState extends State<DetailsScreen>
           ]
         ],
       ),
-    );
-  }
-}
-
-class Buttons extends StatelessWidget {
-  const Buttons({
-    Key? key,
-    required this.fetchedData,
-  }) : super(key: key);
-
-  final Map<String, dynamic>? fetchedData;
-
-  @override
-  Widget build(BuildContext context) {
-    final isPresent = !(Provider.of<Watchlist>(context).getWatchlist.indexWhere(
-              (element) => element["id"] == fetchedData!["id"],
-            ) ==
-        -1);
-    return Row(
-      children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5),
-            child: OutlinedButton.icon(
-              icon: isPresent
-                  ? const Icon(Icons.done)
-                  : const Icon(Icons.watch_later_outlined),
-              label: isPresent
-                  ? const Text("On Watchlist")
-                  : const Text("Watchlist"),
-              onPressed: () async {
-                await Provider.of<Watchlist>(
-                  context,
-                  listen: false,
-                ).toggle(
-                  id: fetchedData!["id"],
-                  titleRomaji: fetchedData!["title"]["romaji"],
-                  image: fetchedData!["image"],
-                );
-              },
-            ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5),
-            child: OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                foregroundColor: fetchedData!["status"] == "Ongoing"
-                    ? Colors.greenAccent[400]
-                    : Colors.redAccent,
-              ),
-              onPressed: () {},
-              child: Text(fetchedData!["status"]),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

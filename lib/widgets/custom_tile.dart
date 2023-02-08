@@ -45,13 +45,27 @@ class CustomTile extends StatelessWidget {
                 airDate == null
                     ? Text(
                         "Episode $episodeNumber",
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontSize: 11,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
                       )
                     : Text(
                         "E$episodeNumber \u2022 ${airDate!.substring(0, 10)}",
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontSize: 11,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
                       ),
                 title != null
                     ? Text(
                         title!,
+                        style:
+                            Theme.of(context).textTheme.displayLarge?.copyWith(
+                                  fontSize: 13,
+                                ),
                         maxLines: 2,
                       )
                     : const Text(
@@ -61,10 +75,7 @@ class CustomTile extends StatelessWidget {
                     ? Text(
                         description!,
                         maxLines: 2,
-                        style:
-                            Theme.of(context).textTheme.labelMedium?.copyWith(
-                                  color: Colors.white60,
-                                ),
+                        style: Theme.of(context).textTheme.titleMedium,
                         overflow: TextOverflow.ellipsis,
                       )
                     : const Text(

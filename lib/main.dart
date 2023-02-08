@@ -55,37 +55,48 @@ class _MyAppState extends State<MyApp> {
                 return MaterialApp(
                   debugShowCheckedModeBanner: false,
                   darkTheme: ThemeData.dark().copyWith(
-                    useMaterial3: true,
-                    colorScheme: const ColorScheme.dark().copyWith(
-                      primary: AppColors.green,
-                    ),
-                    textTheme: TextTheme(
-                      displayLarge: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                      useMaterial3: true,
+                      colorScheme: const ColorScheme.dark().copyWith(
+                        primary: AppColors.green,
                       ),
-                      titleMedium: GoogleFonts.lato(
-                        fontSize: 13,
-                        fontWeight: FontWeight.normal,
-                        color: Colors.white,
+                      textTheme: TextTheme(
+                        displayLarge: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        titleMedium: GoogleFonts.lato(
+                          fontSize: 13,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    inputDecorationTheme: const InputDecorationTheme(
-                      fillColor: AppColors.lightblack,
-                    ),
-                    cardColor: AppColors.lightblack,
-                    scaffoldBackgroundColor: AppColors.black,
-                    iconTheme: const IconThemeData(color: Colors.white),
-                    // outlinedButtonTheme: OutlinedButtonThemeData(
-                    //   style: OutlinedButton.styleFrom(
-                    //     minimumSize: const Size.fromHeight(45),
-                    //     textStyle: const TextStyle(
-                    //       fontSize: 16,
-                    //     ),
-                    //   ),
-                    // ),
-                  ),
+                      inputDecorationTheme: const InputDecorationTheme(
+                        fillColor: AppColors.lightblack,
+                      ),
+                      cardColor: AppColors.lightblack,
+                      scaffoldBackgroundColor: AppColors.black,
+                      iconTheme: const IconThemeData(color: Colors.white),
+                      elevatedButtonTheme: ElevatedButtonThemeData(
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(45),
+                          textStyle: GoogleFonts.poppins(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          foregroundColor: Colors.white,
+                          backgroundColor: AppColors.green,
+                        ),
+                      )
+                      // outlinedButtonTheme: OutlinedButtonThemeData(
+                      //   style: OutlinedButton.styleFrom(
+                      //     minimumSize: const Size.fromHeight(45),
+                      //     textStyle: const TextStyle(
+                      //       fontSize: 16,
+                      //     ),
+                      //   ),
+                      // ),
+                      ),
                   themeMode: ThemeMode.dark,
                   routes: {
                     HomeScreen.routeName: (context) => const HomeScreen(),

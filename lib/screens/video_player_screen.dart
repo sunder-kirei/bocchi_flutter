@@ -76,9 +76,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     ).addToHistory(
       episode: episode,
       image: widget.image,
-      episodeImage: widget.details[episode - 1]["image"],
       itemId: widget.id,
-      details: json.encode(widget.details),
+      title: json.encode(fetchedData!["title"]),
       position: position,
     );
     setState(() {
@@ -127,11 +126,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     ).addToHistory(
       episode: episode,
       image: widget.image,
-      episodeImage: widget.details[episode - 1]["image"],
       itemId: widget.id,
-      details: localDetail == null
-          ? json.encode(widget.details)
-          : json.encode(localDetail),
+      title: json.encode(fetchedData!["title"]),
       position: position ?? 0,
     );
   }

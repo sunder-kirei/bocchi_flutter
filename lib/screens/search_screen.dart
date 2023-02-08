@@ -16,7 +16,6 @@ class _SearchScreenState extends State<SearchScreen> {
   int page = 0;
   TextEditingController? _controller;
   Map<String, dynamic>? fetchedData;
-  FocusNode? _focusNode;
 
   void fetchData(String query) async {
     setState(() {
@@ -34,15 +33,11 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     _controller = TextEditingController();
-    _focusNode = FocusNode();
     super.initState();
   }
 
   @override
   void didChangeDependencies() {
-    if (ModalRoute.of(context)?.settings.arguments != null) {
-      _focusNode?.requestFocus();
-    }
     super.didChangeDependencies();
   }
 
@@ -58,74 +53,77 @@ class _SearchScreenState extends State<SearchScreen> {
         appBar: AppBar(
           title: const Text("Search"),
         ),
-        body: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(5),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: _controller,
-                      focusNode: _focusNode,
-                      keyboardType: TextInputType.text,
-                      textCapitalization: TextCapitalization.sentences,
-                      onEditingComplete: () {
-                        _focusNode!.unfocus();
-                        fetchData(_controller!.text);
-                      },
+        body: Flex(
+          direction: Axis.vertical,
+          children: [
+            Flexible(
+              child: CustomScrollView(
+                slivers: [
+                  if (isLoading)
+                    SliverToBoxAdapter(
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: Theme.of(context).colorScheme.onBackground,
+                        ),
+                      ),
                     ),
-                    const SizedBox(
-                      height: 5,
+                  if (fetchedData != null && isLoading == false)
+                    SliverGrid(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisExtent: 250,
+                      ),
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          final data = fetchedData!["results"][index];
+                          return SearchCard(
+                            callback: () => FocusScope.of(context).unfocus(),
+                            title: data["title"],
+                            type: data["type"],
+                            image: data["image"],
+                            id: data["id"],
+                            disabled: data["status"] == "Not yet aired" ||
+                                data["malId"] == null,
+                          );
+                        },
+                        childCount: fetchedData!["results"].length,
+                      ),
                     ),
-                    const Divider(),
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        if (!_focusNode!.hasFocus) {
-                          _focusNode!.requestFocus();
-                          return;
-                        }
-                        FocusScope.of(context).unfocus();
-                        fetchData(_controller!.text);
-                      },
-                      icon: const Icon(Icons.search_outlined),
-                      label: const Text("Search"),
-                    ),
-                    const Divider(),
-                  ],
-                ),
+                ],
               ),
             ),
-            if (isLoading)
-              SliverToBoxAdapter(
-                child: Center(
-                  child: CircularProgressIndicator(
-                    color: Theme.of(context).colorScheme.onBackground,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 20),
+              child: TextField(
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 5,
                   ),
+                  suffixIcon: Icon(
+                    Icons.search_outlined,
+                  ),
+                  suffixIconColor: Theme.of(context).colorScheme.primary,
+                  labelStyle: Theme.of(context).textTheme.displayLarge,
+                  labelText: "Search",
+                  floatingLabelStyle:
+                      Theme.of(context).textTheme.displayLarge?.copyWith(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                          ),
                 ),
+                controller: _controller,
+                keyboardType: TextInputType.text,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontSize: 15,
+                    ),
+                textCapitalization: TextCapitalization.sentences,
+                onEditingComplete: () {
+                  FocusScope.of(context).unfocus();
+                  fetchData(_controller!.text);
+                },
               ),
-            if (fetchedData != null && isLoading == false)
-              SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisExtent: 250,
-                ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final data = fetchedData!["results"][index];
-                    return SearchCard(
-                      callback: () => FocusScope.of(context).unfocus(),
-                      title: data["title"],
-                      type: data["type"],
-                      image: data["image"],
-                      id: data["id"],
-                      disabled: data["status"] == "Not yet aired" ||
-                          data["malId"] == null,
-                    );
-                  },
-                  childCount: fetchedData!["results"].length,
-                ),
-              ),
+            ),
           ],
         ));
   }

@@ -10,7 +10,6 @@ class SearchButton extends StatelessWidget {
       onPressed: () {
         Navigator.of(context).pushNamed(
           SearchScreen.routeName,
-          arguments: true,
         );
       },
       heroTag: "Search Button",

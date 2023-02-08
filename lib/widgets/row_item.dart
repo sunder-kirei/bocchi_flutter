@@ -40,6 +40,9 @@ class RowItem extends StatelessWidget {
               title[prefferedTitle.name] ?? title[subtitle.name],
               maxLines: 2,
               softWrap: true,
+              style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                    fontSize: 13,
+                  ),
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
             ),

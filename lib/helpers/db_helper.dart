@@ -11,10 +11,10 @@ class DBHelper {
       path,
       onCreate: (db, version) async {
         await db.execute(
-          "CREATE TABLE $tableName (id TEXT PRIMARY KEY, romaji TEXT, image TEXT)",
+          "CREATE TABLE $tableName (id TEXT PRIMARY KEY, title TEXT, image TEXT)",
         );
         await db.execute(
-          "CREATE TABLE $historyTable (id TEXT PRIMARY KEY, image TEXT, episode INTEGER, episodeImage TEXT, details TEXT, position INTEGER)",
+          "CREATE TABLE $historyTable (id TEXT PRIMARY KEY, title TEXT, image TEXT, episode INTEGER, position INTEGER)",
         );
       },
       version: 1,
@@ -62,7 +62,7 @@ class DBHelper {
 
   static Future<int> insert({
     required String itemId,
-    required String titleRomaji,
+    required String title,
     required String image,
   }) async {
     final sql = await openDB();
@@ -70,7 +70,7 @@ class DBHelper {
       tableName,
       {
         "id": itemId,
-        "romaji": titleRomaji,
+        "title": title,
         "image": image,
       },
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -80,10 +80,9 @@ class DBHelper {
 
   static Future<int> insertHistory({
     required String itemId,
-    required String episodeImage,
     required String image,
     required int episode,
-    required String details,
+    required String title,
     required int position,
   }) async {
     final sql = await openDB();
@@ -93,9 +92,8 @@ class DBHelper {
         "id": itemId,
         "image": image,
         "episode": episode,
-        "episodeImage": episodeImage,
-        "details": details,
         "position": position,
+        "title": title,
       },
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
