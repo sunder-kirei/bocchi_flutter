@@ -24,6 +24,7 @@ class DetailsScreen extends StatefulWidget {
 
 class _DetailsScreenState extends State<DetailsScreen> {
   Map<String, dynamic>? fetchedData;
+  double _height = 0;
 
   @override
   void didChangeDependencies() {
@@ -32,109 +33,79 @@ class _DetailsScreenState extends State<DetailsScreen> {
         (ModalRoute.of(context)?.settings.arguments
             as Map<String, dynamic>)["id"],
       )),
-      //Uncomment this is using video_player_screen_animepahe.dart file"
-      // provider: Stream.animepahe,
     ).then(
       (value) {
         setState(() {
           fetchedData = value;
+          _height = MediaQuery.of(context).size.height * 0.5;
         });
       },
     );
+
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const BocchiRichText(
-          fontSize: 20,
-        ),
-      ),
+      // appBar: AppBar(
+      //   title: const BocchiRichText(
+      //     fontSize: 20,
+      //   ),
+      // ),
       body: CustomScrollView(
         slivers: [
+          SliverAppBar(
+            expandedHeight: MediaQuery.of(context).size.height * 0.4,
+            flexibleSpace: FlexibleSpaceBar(
+                background: Stack(
+              children: [
+                Positioned.fill(
+                  child: HeroImage(
+                    imageUrl: (ModalRoute.of(context)?.settings.arguments
+                        as Map<String, dynamic>)["image"],
+                    tag: (ModalRoute.of(context)?.settings.arguments
+                        as Map<String, dynamic>)["tag"],
+                  ),
+                ),
+                AnimatedContainer(
+                  duration: Duration(seconds: 3),
+                  height: _height,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.transparent,
+                        Theme.of(context).scaffoldBackgroundColor
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
+                ),
+              ],
+            )
+                // : Image.memory(kTransparentImage),
+                ),
+          ),
           SliverToBoxAdapter(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: fetchedData != null
-                      ? Stack(
-                          children: [
-                            Positioned.fill(
-                              child: FadeInImage(
-                                placeholder: MemoryImage(kTransparentImage),
-                                image: CachedNetworkImageProvider(
-                                  fetchedData!["cover"],
-                                ),
-                                fit: BoxFit.cover,
-                                fadeInCurve: Curves.easeIn,
-                                fadeInDuration:
-                                    const Duration(milliseconds: 300),
-                              ),
-                            ),
-                            if (fetchedData!["episodes"].length != 0)
-                              Positioned.fill(
-                                child: Material(
-                                  color: Colors.transparent,
-                                  child: IconButton(
-                                    icon: const Icon(Icons.play_arrow_rounded),
-                                    onPressed: () {
-                                      final data = fetchedData!["episodes"][0];
-                                      Navigator.of(context).push(
-                                        CustomRoute(
-                                          builder: (context) {
-                                            final history =
-                                                Provider.of<Watchlist>(context)
-                                                    .getHistory;
-
-                                            final index = history.indexWhere(
-                                                (item) =>
-                                                    item["id"] ==
-                                                    fetchedData!["id"]);
-                                            print(index);
-                                            print(history);
-                                            return VideoPlayerScreen(
-                                              details: fetchedData!["episodes"],
-                                              episode: index != -1
-                                                  ? history[index]["episode"]
-                                                  : data["number"],
-                                              image: fetchedData!["image"],
-                                              id: fetchedData!["id"],
-                                              position: index != -1
-                                                  ? history[index]["position"]
-                                                  : 0,
-                                              //Uncomment this is using video_player_screen_animepahe.dart file" also above in didChangeDependencies()
-                                              // title: fetchedData!["title"]
-                                              //     ["romaji"],
-                                            );
-                                          },
-                                        ),
-                                      );
-                                    },
-                                    iconSize: 80,
-                                    splashRadius: 50,
-                                  ),
-                                ),
-                              )
-                          ],
-                        )
-                      : Image.memory(kTransparentImage),
+                SizedBox(
+                  height: 20,
                 ),
                 Row(
                   children: [
                     SizedBox(
                       width: 170,
                       child: Card(
-                        child: HeroImage(
-                          imageUrl: (ModalRoute.of(context)?.settings.arguments
-                              as Map<String, dynamic>)["image"],
-                          tag: (ModalRoute.of(context)?.settings.arguments
-                              as Map<String, dynamic>)["tag"],
-                        ),
-                      ),
+                          // child: HeroImage(
+                          //   imageUrl: (ModalRoute.of(context)?.settings.arguments
+                          //       as Map<String, dynamic>)["image"],
+                          //   tag: (ModalRoute.of(context)?.settings.arguments
+                          //       as Map<String, dynamic>)["tag"],
+                          // ),
+                          ),
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width - 170,

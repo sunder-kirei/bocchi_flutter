@@ -1,4 +1,5 @@
 import 'package:flutter_displaymode/flutter_displaymode.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../providers/user_preferences.dart';
 import '../screens/search_screen.dart';
@@ -9,6 +10,7 @@ import 'package:provider/provider.dart';
 
 import './screens/details_screen.dart';
 import './screens/home_screen.dart';
+import 'constants/app_colors.dart';
 
 void main() {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -52,15 +54,29 @@ class _MyAppState extends State<MyApp> {
                 }
                 return MaterialApp(
                   debugShowCheckedModeBanner: false,
-                  scrollBehavior: const ScrollBehavior(
-                    // ignore: deprecated_member_use
-                    androidOverscrollIndicator:
-                        AndroidOverscrollIndicator.stretch,
-                  ),
                   darkTheme: ThemeData.dark().copyWith(
+                    useMaterial3: true,
                     colorScheme: const ColorScheme.dark().copyWith(
-                      primary: Colors.pinkAccent,
+                      primary: AppColors.green,
                     ),
+                    textTheme: TextTheme(
+                      displayLarge: GoogleFonts.poppins(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                      titleMedium: GoogleFonts.lato(
+                        fontSize: 13,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.white,
+                      ),
+                    ),
+                    inputDecorationTheme: const InputDecorationTheme(
+                      fillColor: AppColors.lightblack,
+                    ),
+                    cardColor: AppColors.lightblack,
+                    scaffoldBackgroundColor: AppColors.black,
+                    iconTheme: const IconThemeData(color: Colors.white),
                     outlinedButtonTheme: OutlinedButtonThemeData(
                       style: OutlinedButton.styleFrom(
                         minimumSize: const Size.fromHeight(45),

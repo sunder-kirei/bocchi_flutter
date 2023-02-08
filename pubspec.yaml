@@ -51,6 +51,7 @@ dependencies:
   transparent_image: ^2.0.0
   flutter_displaymode: ^0.5.0
   wakelock: ^0.6.2
+  google_fonts: ^4.0.3
 
 dev_dependencies:
   flutter_test:
