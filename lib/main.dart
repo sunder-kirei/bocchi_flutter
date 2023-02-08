@@ -61,7 +61,7 @@ class _MyAppState extends State<MyApp> {
                     ),
                     textTheme: TextTheme(
                       displayLarge: GoogleFonts.poppins(
-                        fontSize: 15,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
@@ -77,14 +77,14 @@ class _MyAppState extends State<MyApp> {
                     cardColor: AppColors.lightblack,
                     scaffoldBackgroundColor: AppColors.black,
                     iconTheme: const IconThemeData(color: Colors.white),
-                    outlinedButtonTheme: OutlinedButtonThemeData(
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(45),
-                        textStyle: const TextStyle(
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
+                    // outlinedButtonTheme: OutlinedButtonThemeData(
+                    //   style: OutlinedButton.styleFrom(
+                    //     minimumSize: const Size.fromHeight(45),
+                    //     textStyle: const TextStyle(
+                    //       fontSize: 16,
+                    //     ),
+                    //   ),
+                    // ),
                   ),
                   themeMode: ThemeMode.dark,
                   routes: {

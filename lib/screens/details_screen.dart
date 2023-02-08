@@ -1,16 +1,14 @@
-import 'package:anime_api/helpers/custom_route.dart';
-import 'package:anime_api/providers/user_preferences.dart';
-import 'package:anime_api/screens/video_player_screen.dart';
-import 'package:anime_api/widgets/custom_tile.dart';
-import 'package:anime_api/widgets/row_item.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
 
+import '../helpers/custom_route.dart';
 import '../helpers/http_helper.dart';
-import '../widgets/bocchi_rich_text.dart';
+import '../screens/video_player_screen.dart';
+import '../providers/user_preferences.dart';
+import '../widgets/row_item.dart';
+import '../widgets/custom_tile.dart';
 import '../widgets/hero_image.dart';
 import '../widgets/info_pane.dart';
 
@@ -22,9 +20,22 @@ class DetailsScreen extends StatefulWidget {
   State<DetailsScreen> createState() => _DetailsScreenState();
 }
 
-class _DetailsScreenState extends State<DetailsScreen> {
+class _DetailsScreenState extends State<DetailsScreen>
+    with TickerProviderStateMixin {
   Map<String, dynamic>? fetchedData;
-  double _height = 0;
+  late final AnimationController _animationController =
+      AnimationController(vsync: this, duration: Duration(milliseconds: 300))
+        ..forward();
+  late final Animation<double> _animation = CurvedAnimation(
+    parent: _animationController,
+    curve: Curves.easeInCubic,
+  );
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   @override
   void didChangeDependencies() {
@@ -37,7 +48,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
       (value) {
         setState(() {
           fetchedData = value;
-          _height = MediaQuery.of(context).size.height * 0.5;
         });
       },
     );
@@ -48,44 +58,42 @@ class _DetailsScreenState extends State<DetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const BocchiRichText(
-      //     fontSize: 20,
-      //   ),
-      // ),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             expandedHeight: MediaQuery.of(context).size.height * 0.4,
+            pinned: true,
             flexibleSpace: FlexibleSpaceBar(
-                background: Stack(
-              children: [
-                Positioned.fill(
-                  child: HeroImage(
-                    imageUrl: (ModalRoute.of(context)?.settings.arguments
-                        as Map<String, dynamic>)["image"],
-                    tag: (ModalRoute.of(context)?.settings.arguments
-                        as Map<String, dynamic>)["tag"],
-                  ),
-                ),
-                AnimatedContainer(
-                  duration: Duration(seconds: 3),
-                  height: _height,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.transparent,
-                        Theme.of(context).scaffoldBackgroundColor
-                      ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
+              background: Stack(
+                children: [
+                  Positioned.fill(
+                    child: HeroImage(
+                      imageUrl: (ModalRoute.of(context)?.settings.arguments
+                          as Map<String, dynamic>)["image"],
+                      tag: (ModalRoute.of(context)?.settings.arguments
+                          as Map<String, dynamic>)["tag"],
                     ),
                   ),
-                ),
-              ],
-            )
-                // : Image.memory(kTransparentImage),
-                ),
+                  Positioned.fill(
+                    child: FadeTransition(
+                      opacity: _animation,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.transparent,
+                              Theme.of(context).scaffoldBackgroundColor
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
           SliverToBoxAdapter(
             child: Column(
@@ -94,44 +102,27 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 SizedBox(
                   height: 20,
                 ),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 170,
-                      child: Card(
-                          // child: HeroImage(
-                          //   imageUrl: (ModalRoute.of(context)?.settings.arguments
-                          //       as Map<String, dynamic>)["image"],
-                          //   tag: (ModalRoute.of(context)?.settings.arguments
-                          //       as Map<String, dynamic>)["tag"],
-                          // ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 5,
+                  ),
+                  height: 240,
+                  child: fetchedData == null
+                      ? Center(
+                          child: CircularProgressIndicator(
+                            color: Theme.of(context).colorScheme.onBackground,
                           ),
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width - 170,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 5,
-                      ),
-                      height: 240,
-                      child: fetchedData == null
-                          ? Center(
-                              child: CircularProgressIndicator(
-                                color:
-                                    Theme.of(context).colorScheme.onBackground,
-                              ),
-                            )
-                          : InfoPane(
-                              rating: fetchedData!["rating"] ?? 0,
-                              releaseDate: fetchedData!["releaseDate"] ?? 0,
-                              studio: fetchedData!["studios"].length != 0
-                                  ? fetchedData!["studios"][0]
-                                  : "Unknown",
-                              synonyms: fetchedData!["synonyms"] ?? "Unknown",
-                              title: fetchedData!["title"] ?? "Unknown",
-                            ),
-                    ),
-                  ],
+                        )
+                      : InfoPane(
+                          rating: fetchedData!["rating"] ?? 0,
+                          releaseDate: fetchedData!["releaseDate"] ?? 0,
+                          studio: fetchedData!["studios"].length != 0
+                              ? fetchedData!["studios"][0]
+                              : "Unknown",
+                          synonyms: fetchedData!["synonyms"] ?? "Unknown",
+                          title: fetchedData!["title"] ?? "Unknown",
+                        ),
                 ),
                 const Divider(
                   height: 10,

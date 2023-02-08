@@ -29,29 +29,23 @@ class InfoPane extends StatelessWidget {
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          "Title",
-          style: Theme.of(context).textTheme.caption,
-        ),
         Text(
           title[prefferedTitle.name] ?? title[subtitle.name] ?? "Unknown",
           maxLines: 2,
+          textAlign: TextAlign.center,
           overflow: TextOverflow.ellipsis,
-          style: Theme.of(context).textTheme.titleSmall,
+          style: Theme.of(context).textTheme.displayLarge,
         ),
-        if (synonyms.isNotEmpty)
+        
+        if (title[subtitle.name] != null || synonyms.isNotEmpty)
           Text(
-            "Alternate Title",
-            style: Theme.of(context).textTheme.caption,
+            title[subtitle.name] ?? synonyms[0] ?? "Unknown",
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.titleMedium,
           ),
-        Text(
-          title[subtitle.name] ?? synonyms[0] ?? "Unknown",
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
         Text(
           "Release Date",
           style: Theme.of(context).textTheme.caption,
