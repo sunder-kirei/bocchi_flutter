@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 
 import '../helpers/http_helper.dart';
 import '../widgets/bocchi_rich_text.dart';
-import '../widgets/custom_app_bar.dart';
 import '../widgets/row_item.dart';
 import '../widgets/row_sliver.dart';
 
@@ -69,145 +68,167 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Flexible(
             child: currentIndex == 0
-                ? CustomScrollView(
-                    slivers: [
-                      CustomAppBar(
-                        image: Image.asset(
-                          "assets/landing.jpg",
-                          fit: BoxFit.cover,
-                          alignment: Alignment.centerRight,
-                        ),
-                        title: const BocchiRichText(fontSize: 20),
-                      ),
-                      if (Provider.of<Watchlist>(context)
-                          .getHistory
-                          .isNotEmpty) ...[
-                        SliverToBoxAdapter(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              left: 5.0,
-                              top: 10,
-                              bottom: 5,
-                            ),
-                            child: Text(
-                              "Continue Watching",
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                          ),
-                        ),
-                        SliverToBoxAdapter(
-                          child: Container(
-                            height: 120,
-                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                            child: ListView.separated(
-                              separatorBuilder: (context, index) =>
-                                  const SizedBox(
-                                width: 5,
+                ? Flex(
+                    mainAxisSize: MainAxisSize.max,
+                    direction: Axis.vertical,
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.4,
+                        child: Stack(
+                          children: [
+                            Positioned.fill(
+                              child: Image.asset(
+                                "assets/landing.jpg",
+                                fit: BoxFit.cover,
                               ),
-                              itemBuilder: (context, index) {
-                                final data = Provider.of<Watchlist>(context)
-                                    .getHistory
-                                    .reversed
-                                    .toList()[index];
-                                return HistoryTile(data: data);
-                              },
-                              itemCount: Provider.of<Watchlist>(context)
-                                  .getHistory
-                                  .length,
-                              scrollDirection: Axis.horizontal,
                             ),
-                          ),
-                        )
-                      ],
-                      if (Provider.of<Watchlist>(context)
-                          .getWatchlist
-                          .isNotEmpty) ...[
-                        SliverToBoxAdapter(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              left: 5.0,
-                              top: 10,
-                              bottom: 5,
+                            const Positioned(
+                              left: 100,
+                              bottom: 0,
+                              child: BocchiRichText(fontSize: 42),
                             ),
-                            child: Text(
-                              "Your Watchlist",
-                              style: Theme.of(context).textTheme.titleLarge,
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: CustomScrollView(
+                          slivers: [
+                            if (Provider.of<Watchlist>(context)
+                                .getHistory
+                                .isNotEmpty) ...[
+                              SliverToBoxAdapter(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 5.0,
+                                    top: 10,
+                                    bottom: 5,
+                                  ),
+                                  child: Text(
+                                    "Continue Watching",
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge,
+                                  ),
+                                ),
+                              ),
+                              SliverToBoxAdapter(
+                                child: Container(
+                                  height: 120,
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 5),
+                                  child: ListView.separated(
+                                    separatorBuilder: (context, index) =>
+                                        const SizedBox(
+                                      width: 5,
+                                    ),
+                                    itemBuilder: (context, index) {
+                                      final data =
+                                          Provider.of<Watchlist>(context)
+                                              .getHistory
+                                              .reversed
+                                              .toList()[index];
+                                      return HistoryTile(data: data);
+                                    },
+                                    itemCount: Provider.of<Watchlist>(context)
+                                        .getHistory
+                                        .length,
+                                    scrollDirection: Axis.horizontal,
+                                  ),
+                                ),
+                              )
+                            ],
+                            if (Provider.of<Watchlist>(context)
+                                .getWatchlist
+                                .isNotEmpty) ...[
+                              SliverToBoxAdapter(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 5.0,
+                                    top: 10,
+                                    bottom: 5,
+                                  ),
+                                  child: Text(
+                                    "Your Watchlist",
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge,
+                                  ),
+                                ),
+                              ),
+                              SliverToBoxAdapter(
+                                child: SizedBox(
+                                  height: 250,
+                                  child: ListView.builder(
+                                    itemBuilder: (context, index) {
+                                      final data = Provider.of<Watchlist>(
+                                        context,
+                                      ).getWatchlist[index];
+                                      return RowItem(
+                                        id: data["id"],
+                                        image: data["image"],
+                                        title: {
+                                          "romaji": data["romaji"],
+                                        },
+                                        tag: "watchlist${data["id"]}",
+                                      );
+                                    },
+                                    itemCount: Provider.of<Watchlist>(context)
+                                        .getWatchlist
+                                        .length,
+                                    scrollDirection: Axis.horizontal,
+                                    itemExtent: 170,
+                                  ),
+                                ),
+                              ),
+                            ],
+                            SliverToBoxAdapter(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 5.0,
+                                  top: 10,
+                                  bottom: 5,
+                                ),
+                                child: Text(
+                                  "Recent Uploads",
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                        SliverToBoxAdapter(
-                          child: SizedBox(
-                            height: 250,
-                            child: ListView.builder(
-                              itemBuilder: (context, index) {
-                                final data = Provider.of<Watchlist>(
-                                  context,
-                                ).getWatchlist[index];
-                                return RowItem(
-                                  id: data["id"],
-                                  image: data["image"],
-                                  title: {
-                                    "romaji": data["romaji"],
-                                  },
-                                  tag: "watchlist${data["id"]}",
-                                );
-                              },
-                              itemCount: Provider.of<Watchlist>(context)
-                                  .getWatchlist
-                                  .length,
-                              scrollDirection: Axis.horizontal,
-                              itemExtent: 170,
+                            const RowSliver(
+                              option: GetLanding.recent_episodes,
                             ),
-                          ),
+                            SliverToBoxAdapter(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 5.0,
+                                  top: 10,
+                                  bottom: 5,
+                                ),
+                                child: Text(
+                                  "Trending",
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                ),
+                              ),
+                            ),
+                            const RowSliver(
+                              option: GetLanding.trending,
+                            ),
+                            SliverToBoxAdapter(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 5.0,
+                                  top: 10,
+                                  bottom: 5,
+                                ),
+                                child: Text(
+                                  "Popular",
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                ),
+                              ),
+                            ),
+                            const RowSliver(
+                              option: GetLanding.popular,
+                            ),
+                          ],
                         ),
-                      ],
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                            left: 5.0,
-                            top: 10,
-                            bottom: 5,
-                          ),
-                          child: Text(
-                            "Recent Uploads",
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                        ),
-                      ),
-                      const RowSliver(
-                        option: GetLanding.recent_episodes,
-                      ),
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                            left: 5.0,
-                            top: 10,
-                            bottom: 5,
-                          ),
-                          child: Text(
-                            "Trending",
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                        ),
-                      ),
-                      const RowSliver(
-                        option: GetLanding.trending,
-                      ),
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                            left: 5.0,
-                            top: 10,
-                            bottom: 5,
-                          ),
-                          child: Text(
-                            "Popular",
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                        ),
-                      ),
-                      const RowSliver(
-                        option: GetLanding.popular,
                       ),
                     ],
                   )
