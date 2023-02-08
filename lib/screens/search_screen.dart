@@ -1,6 +1,8 @@
+import 'package:anime_api/widgets/bocchi_rich_text.dart';
 import 'package:flutter/material.dart';
 
 import '../helpers/http_helper.dart';
+import '../widgets/preferences_modal.dart';
 import '../widgets/search_card.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -51,7 +53,20 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Search"),
+          title: const BocchiRichText(),
+          actions: [
+            IconButton(
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) => const PreferencesModal(),
+                );
+              },
+              icon: const Icon(
+                Icons.more_vert_rounded,
+              ),
+            ),
+          ],
         ),
         body: Flex(
           direction: Axis.vertical,
@@ -61,9 +76,12 @@ class _SearchScreenState extends State<SearchScreen> {
                 slivers: [
                   if (isLoading)
                     SliverToBoxAdapter(
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          color: Theme.of(context).colorScheme.onBackground,
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.7,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: Theme.of(context).colorScheme.onBackground,
+                          ),
                         ),
                       ),
                     ),
@@ -97,10 +115,10 @@ class _SearchScreenState extends State<SearchScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 20),
               child: TextField(
                 decoration: InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(
+                  contentPadding: const EdgeInsets.symmetric(
                     horizontal: 5,
                   ),
-                  suffixIcon: Icon(
+                  suffixIcon: const Icon(
                     Icons.search_outlined,
                   ),
                   suffixIconColor: Theme.of(context).colorScheme.primary,

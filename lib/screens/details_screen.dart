@@ -1,10 +1,8 @@
 import 'dart:convert';
 
-import 'package:anime_api/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart';
 import 'package:provider/provider.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 import '../helpers/custom_route.dart';
 import '../helpers/http_helper.dart';
@@ -26,9 +24,9 @@ class DetailsScreen extends StatefulWidget {
 class _DetailsScreenState extends State<DetailsScreen>
     with TickerProviderStateMixin {
   Map<String, dynamic>? fetchedData;
-  late final AnimationController _animationController =
-      AnimationController(vsync: this, duration: Duration(milliseconds: 500))
-        ..forward();
+  late final AnimationController _animationController = AnimationController(
+      vsync: this, duration: const Duration(milliseconds: 500))
+    ..forward();
   late final Animation<double> _animation = CurvedAnimation(
     parent: _animationController,
     curve: Curves.easeInCubic,
@@ -71,26 +69,28 @@ class _DetailsScreenState extends State<DetailsScreen>
           -1);
     }
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await Provider.of<Watchlist>(
-            context,
-            listen: false,
-          ).toggle(
-            id: fetchedData!["id"],
-            title: json.encode(fetchedData!["title"]),
-            image: fetchedData!["image"],
-          );
-        },
-        child: isPresent
-            ? Icon(
-                Icons.done_rounded,
-              )
-            : Icon(
-                Icons.history_outlined,
-              ),
-        tooltip: "Add to watchlist",
-      ),
+      floatingActionButton: fetchedData != null
+          ? FloatingActionButton(
+              onPressed: () async {
+                await Provider.of<Watchlist>(
+                  context,
+                  listen: false,
+                ).toggle(
+                  id: fetchedData!["id"],
+                  title: json.encode(fetchedData!["title"]),
+                  image: fetchedData!["image"],
+                );
+              },
+              tooltip: "Add to watchlist",
+              child: isPresent
+                  ? const Icon(
+                      Icons.done_rounded,
+                    )
+                  : const Icon(
+                      Icons.history_outlined,
+                    ),
+            )
+          : null,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(

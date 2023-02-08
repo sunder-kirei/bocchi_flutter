@@ -1,4 +1,3 @@
-import 'package:anime_api/constants/app_colors.dart';
 import 'package:anime_api/providers/user_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

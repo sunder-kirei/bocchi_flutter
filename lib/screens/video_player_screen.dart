@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:anime_api/constants/app_colors.dart';
 import 'package:anime_api/helpers/http_helper.dart';
 import 'package:anime_api/providers/user_preferences.dart';
 import 'package:anime_api/screens/details_screen.dart';
@@ -227,7 +228,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                               ),
                               Text(
                                 "Currently Watching",
-                                style: Theme.of(context).textTheme.caption,
+                                style: Theme.of(context).textTheme.titleMedium,
                               ),
                               const SizedBox(
                                 height: 3,
@@ -236,21 +237,26 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                                 fetchedData!["title"]["romaji"],
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.titleLarge,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .displayLarge
+                                    ?.copyWith(
+                                      fontSize: 15,
+                                    ),
                               ),
                               const SizedBox(
-                                height: 10,
+                                height: 5,
                               ),
                               Text(
                                 "Episode",
-                                style: Theme.of(context).textTheme.caption,
+                                style: Theme.of(context).textTheme.titleMedium,
                               ),
                               const SizedBox(
                                 height: 3,
                               ),
                               Text(
                                 currentEpisode.toString(),
-                                style: Theme.of(context).textTheme.titleLarge,
+                                style: Theme.of(context).textTheme.displayLarge,
                               ),
                             ],
                           ),
@@ -258,14 +264,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     ],
                   ),
                 ),
-                const Divider(),
+                const SizedBox(height: 15),
               ],
             ),
             Padding(
               padding: const EdgeInsets.all(5.0),
               child: Text(
                 "Up Next",
-                style: Theme.of(context).textTheme.titleLarge,
+                style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                      fontSize: 24,
+                    ),
               ),
             ),
             const SizedBox(
@@ -288,7 +296,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     },
                     child: Container(
                       color: data["number"] == currentEpisode
-                          ? Theme.of(context).colorScheme.background
+                          ? AppColors.grey
                           : null,
                       width: MediaQuery.of(context).size.width,
                       height: 100,

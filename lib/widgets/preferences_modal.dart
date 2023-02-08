@@ -112,11 +112,15 @@ class PreferencesModal extends StatelessWidget {
     BuildContext context,
   ) {
     return Flexible(
-      child: OutlinedButton(
+      child: ElevatedButton(
         onPressed: callback,
-        style: active
-            ? OutlinedButton.styleFrom(
-                side: BorderSide(color: Theme.of(context).colorScheme.primary),
+        style: !active
+            ? ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                foregroundColor: Colors.white,
+                side: const BorderSide(
+                  color: Colors.white,
+                ),
               )
             : null,
         child: Text(value),

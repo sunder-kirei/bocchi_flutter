@@ -13,37 +13,32 @@ class RowSliver extends StatelessWidget {
     return FutureBuilder(
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return const SliverToBoxAdapter(
+          return SliverToBoxAdapter(
             child: SizedBox(
-              height: 250,
-              child: Card(
-                child: Center(
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                  ),
+              height: MediaQuery.of(context).size.height * 0.7,
+              child: const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.white,
                 ),
               ),
             ),
           );
         }
         final fetchedData = snapshot.data!["results"];
-        return SliverToBoxAdapter(
-          child: SizedBox(
-            height: 250,
-            child: ListView.builder(
-              itemBuilder: (context, index) => RowItem(
-                id: fetchedData[index]["id"],
-                image: fetchedData[index]["image"],
-                title: fetchedData[index]["title"],
-                tag: option.name +
-                    fetchedData[index]["id"].toString() +
-                    fetchedData[index]["episodeId"].toString(),
-              ),
-              itemCount: fetchedData.length,
-              scrollDirection: Axis.horizontal,
-              itemExtent: 170,
-            ),
+        return SliverGrid.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisExtent: 280,
           ),
+          itemBuilder: (context, index) => RowItem(
+            id: fetchedData[index]["id"],
+            image: fetchedData[index]["image"],
+            title: fetchedData[index]["title"],
+            tag: option.name +
+                fetchedData[index]["id"].toString() +
+                fetchedData[index]["episodeId"].toString(),
+          ),
+          itemCount: fetchedData.length,
         );
       },
       future: HttpHelper.getLanding(landing: option),

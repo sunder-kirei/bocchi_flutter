@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 class BocchiRichText extends StatelessWidget {
-  final double fontSize;
-  const BocchiRichText({super.key, required this.fontSize});
+  const BocchiRichText({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +19,9 @@ class BocchiRichText extends StatelessWidget {
           ),
           TextSpan(text: "tv"),
         ],
-        style: TextStyle(
-          fontFamily: "Roboto",
-          fontWeight: FontWeight.w500,
-          fontSize: fontSize,
-        ),
+        style: Theme.of(context).textTheme.displayLarge?.copyWith(
+              fontSize: 24,
+            ),
       ),
     );
   }

@@ -1,3 +1,5 @@
+import 'package:anime_api/screens/library_screen.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -55,56 +57,95 @@ class _MyAppState extends State<MyApp> {
                 return MaterialApp(
                   debugShowCheckedModeBanner: false,
                   darkTheme: ThemeData.dark().copyWith(
-                      useMaterial3: true,
-                      colorScheme: const ColorScheme.dark().copyWith(
-                        primary: AppColors.green,
+                    useMaterial3: true,
+                    colorScheme: const ColorScheme.dark().copyWith(
+                      primary: AppColors.green,
+                    ),
+                    textTheme: TextTheme(
+                      displayLarge: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
-                      textTheme: TextTheme(
-                        displayLarge: GoogleFonts.poppins(
+                      titleMedium: GoogleFonts.lato(
+                        fontSize: 13,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.white,
+                      ),
+                    ),
+                    inputDecorationTheme: const InputDecorationTheme(
+                      fillColor: AppColors.lightblack,
+                    ),
+                    cardColor: AppColors.lightblack,
+                    scaffoldBackgroundColor: AppColors.black,
+                    iconTheme: const IconThemeData(color: Colors.white),
+                    elevatedButtonTheme: ElevatedButtonThemeData(
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(45),
+                        textStyle: GoogleFonts.poppins(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
                         ),
-                        titleMedium: GoogleFonts.lato(
-                          fontSize: 13,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.white,
-                        ),
+                        foregroundColor: Colors.white,
+                        backgroundColor: AppColors.green,
                       ),
-                      inputDecorationTheme: const InputDecorationTheme(
-                        fillColor: AppColors.lightblack,
-                      ),
-                      cardColor: AppColors.lightblack,
-                      scaffoldBackgroundColor: AppColors.black,
-                      iconTheme: const IconThemeData(color: Colors.white),
-                      elevatedButtonTheme: ElevatedButtonThemeData(
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size.fromHeight(45),
-                          textStyle: GoogleFonts.poppins(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          foregroundColor: Colors.white,
-                          backgroundColor: AppColors.green,
-                        ),
-                      )
-                      // outlinedButtonTheme: OutlinedButtonThemeData(
-                      //   style: OutlinedButton.styleFrom(
-                      //     minimumSize: const Size.fromHeight(45),
-                      //     textStyle: const TextStyle(
-                      //       fontSize: 16,
-                      //     ),
-                      //   ),
-                      // ),
-                      ),
+                    ),
+                  ),
                   themeMode: ThemeMode.dark,
+                  home: const Home(),
                   routes: {
-                    HomeScreen.routeName: (context) => const HomeScreen(),
                     DetailsScreen.routeName: (context) => const DetailsScreen(),
-                    SearchScreen.routeName: (context) => const SearchScreen(),
                   },
                 );
               },
             ));
+  }
+}
+
+class Home extends StatefulWidget {
+  const Home({super.key});
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  int _currentIndex = 0;
+
+  Widget _buildHome() {
+    if (_currentIndex == 0) {
+      return const HomeScreen();
+    }
+    if (_currentIndex == 1) {
+      return const SearchScreen();
+    }
+    return const LibraryScreen();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      bottomNavigationBar: CurvedNavigationBar(
+        backgroundColor: Colors.transparent,
+        items: const [
+          Icon(Icons.home),
+          Icon(Icons.search_rounded),
+          Icon(Icons.video_library_rounded),
+        ],
+        buttonBackgroundColor: Theme.of(context).colorScheme.primary,
+        color: Theme.of(context).colorScheme.primary,
+        animationCurve: Curves.easeOutCubic,
+        animationDuration: const Duration(milliseconds: 300),
+        height: 60,
+        index: 0,
+        onTap: (value) {
+          if (_currentIndex == value) return;
+          setState(() {
+            _currentIndex = value;
+          });
+        },
+      ),
+      body: _buildHome(),
+    );
   }
 }
