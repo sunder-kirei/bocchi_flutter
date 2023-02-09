@@ -4,6 +4,7 @@ import 'package:path/path.dart';
 class DBHelper {
   static const tableName = "watchlist";
   static const historyTable = "history";
+  static const searchHistory = "search_history";
 
   static Future<Database> openDB() async {
     final path = join(await getDatabasesPath(), "user.db");
@@ -16,6 +17,8 @@ class DBHelper {
         await db.execute(
           "CREATE TABLE $historyTable (id TEXT PRIMARY KEY, title TEXT, image TEXT, episode INTEGER, position INTEGER)",
         );
+        await db.execute(
+            "CREATE TABLE $searchHistory (search_query TEXT PRIMARY KEY)");
       },
       version: 1,
     );
@@ -31,6 +34,12 @@ class DBHelper {
   static Future<List<Map<String, dynamic>>> queryAllHistory() async {
     final sql = await openDB();
     final data = await sql.query(historyTable);
+    return data;
+  }
+
+  static Future<List<Map<String, dynamic>>> queryAllSearchHistory() async {
+    final sql = await openDB();
+    final data = await sql.query(searchHistory);
     return data;
   }
 
@@ -98,6 +107,19 @@ class DBHelper {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
     return id;
+  }
+
+  static Future<void> insertSearchHistory({
+    required String title,
+  }) async {
+    final sql = await openDB();
+    await sql.insert(
+      searchHistory,
+      {
+        "search_query": title,
+      },
+    );
+    return;
   }
 
   static dynamic delete({required String itemId}) async {

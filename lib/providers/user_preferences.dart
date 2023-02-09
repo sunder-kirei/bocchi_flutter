@@ -63,6 +63,15 @@ class Watchlist with ChangeNotifier {
     return;
   }
 
+  Future<List<String>> fetchSearchHistory() async {
+    final result = await DBHelper.queryAllSearchHistory();
+    return result
+        .map(
+          (item) => item.values.toList()[0].toString(),
+        )
+        .toList();
+  }
+
   Future<void> fetchAll() async {
     await fetchWatchlist();
     await fetchHistory();
@@ -108,6 +117,13 @@ class Watchlist with ChangeNotifier {
       position: position,
     );
     await fetchHistory();
+    return;
+  }
+
+  Future<void> addToSearchHistory({
+    required String title,
+  }) async {
+    await DBHelper.insertSearchHistory(title: title);
     return;
   }
 

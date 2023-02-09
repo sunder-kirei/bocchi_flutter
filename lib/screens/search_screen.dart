@@ -1,5 +1,8 @@
+import 'package:anime_api/providers/user_preferences.dart';
 import 'package:anime_api/widgets/bocchi_rich_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:provider/provider.dart';
 
 import '../helpers/http_helper.dart';
 import '../widgets/preferences_modal.dart';
@@ -77,15 +80,43 @@ class _SearchScreenState extends State<SearchScreen> {
                   if (isLoading)
                     SliverToBoxAdapter(
                       child: SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.7,
+                        height: MediaQuery.of(context).size.height * 0.8,
                         child: Center(
-                          child: CircularProgressIndicator(
-                            color: Theme.of(context).colorScheme.onBackground,
+                          child: SpinKitThreeInOut(
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ),
                     ),
-                  if (fetchedData != null && isLoading == false)
+                  if (!isLoading && fetchedData == null)
+                    FutureBuilder(
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData)
+                          return SliverToBoxAdapter(
+                            child: Center(child: Text("loading")),
+                          );
+                        return SliverToBoxAdapter(
+                          child: Text(snapshot.data.toString()),
+                        );
+                      },
+                      future: Provider.of<Watchlist>(
+                        context,
+                        listen: false,
+                      ).fetchSearchHistory(),
+                    ),
+                  if (fetchedData != null && isLoading == false) ...[
+                    if (fetchedData!["results"].length == 0)
+                      SliverToBoxAdapter(
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.8,
+                          child: Center(
+                            child: Text(
+                              "Sorry, nothing found!",
+                              style: Theme.of(context).textTheme.displayLarge,
+                            ),
+                          ),
+                        ),
+                      ),
                     SliverGrid(
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
@@ -108,6 +139,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         childCount: fetchedData!["results"].length,
                       ),
                     ),
+                  ]
                 ],
               ),
             ),
@@ -139,6 +171,12 @@ class _SearchScreenState extends State<SearchScreen> {
                 onEditingComplete: () {
                   FocusScope.of(context).unfocus();
                   fetchData(_controller!.text);
+                  Provider.of<Watchlist>(
+                    context,
+                    listen: false,
+                  ).addToSearchHistory(
+                    title: _controller!.text,
+                  );
                 },
               ),
             ),
