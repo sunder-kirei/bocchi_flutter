@@ -76,61 +76,50 @@ class _SearchScreenState extends State<SearchScreen> {
         body: Flex(
           direction: Axis.vertical,
           children: [
-            Flexible(
-              child: CustomScrollView(
-                slivers: [
-                  if (isLoading)
-                    SliverToBoxAdapter(
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.8,
-                        child: Center(
-                          child: SpinKitThreeInOut(
-                            color: Theme.of(context).colorScheme.primary,
-                            size: 30,
-                          ),
+            if (fetchedData == null) ...[
+              isLoading
+                  ? Flexible(
+                      child: Center(
+                        child: SpinKitThreeInOut(
+                          color: Theme.of(context).colorScheme.primary,
+                          size: 30,
                         ),
                       ),
-                    ),
-                  if (!isLoading && fetchedData == null)
-                    FutureBuilder(
+                    )
+                  : FutureBuilder(
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
-                          return SliverToBoxAdapter(
+                          return Flexible(
                             child: SpinKitThreeBounce(
                               color: Theme.of(context).colorScheme.primary,
                               size: 20,
                             ),
                           );
                         }
-                        return SliverToBoxAdapter(
-                          child: Container(
-                            height: MediaQuery.of(
-                                  context,
-                                ).size.height *
-                                0.65,
-                            color: Colors.red,
-                            padding: EdgeInsets.only(
-                              bottom: MediaQuery.of(context).viewInsets.bottom,
-                            ),
-                            child: ListView.builder(
-                              itemBuilder: (context, index) => ListTile(
+                        return Flexible(
+                          child: ListView.builder(
+                            reverse: true,
+                            itemBuilder: (context, index) {
+                              final data = snapshot.data!.reversed.toList();
+                              return ListTile(
                                 dense: true,
-                                leading: Icon(Icons.history),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                ),
+                                leading: const Icon(Icons.history),
                                 title: Text(
-                                  snapshot.data![index].toString(),
+                                  data[index].toString(),
                                   style: Theme.of(
                                     context,
                                   ).textTheme.displayLarge,
                                 ),
                                 onTap: () {
-                                  _controller?.text =
-                                      snapshot.data![index].toString();
+                                  _controller?.text = data[index].toString();
                                   _focusNode.requestFocus();
                                 },
-                              ),
-                              itemCount: snapshot.data?.length,
-                              reverse: true,
-                            ),
+                              );
+                            },
+                            itemCount: snapshot.data?.length,
                           ),
                         );
                       },
@@ -139,7 +128,11 @@ class _SearchScreenState extends State<SearchScreen> {
                         listen: false,
                       ).fetchSearchHistory(),
                     ),
-                  if (fetchedData != null && isLoading == false) ...[
+            ],
+            if (fetchedData != null && isLoading == false)
+              Flexible(
+                child: CustomScrollView(
+                  slivers: [
                     if (fetchedData!["results"].length == 0)
                       SliverToBoxAdapter(
                         child: SizedBox(
@@ -174,22 +167,18 @@ class _SearchScreenState extends State<SearchScreen> {
                         childCount: fetchedData!["results"].length,
                       ),
                     ),
-                  ]
-                ],
+                  ],
+                ),
               ),
-            ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
               child: TextField(
                 focusNode: _focusNode,
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 5,
                   ),
-                  suffixIcon: const Icon(
-                    Icons.search_outlined,
-                  ),
-                  suffixIconColor: Theme.of(context).colorScheme.primary,
+                  prefixIcon: const Icon(Icons.search_rounded),
                   labelStyle: Theme.of(context).textTheme.displayLarge,
                   labelText: "Search",
                   floatingLabelStyle:
@@ -211,7 +200,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     context,
                     listen: false,
                   ).addToSearchHistory(
-                    title: _controller!.text,
+                    title: _controller!.text.trim().toLowerCase(),
                   );
                 },
               ),
