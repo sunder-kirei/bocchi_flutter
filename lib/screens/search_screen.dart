@@ -20,6 +20,7 @@ class _SearchScreenState extends State<SearchScreen> {
   bool isLoading = false;
   int page = 0;
   TextEditingController? _controller;
+  final FocusNode _focusNode = FocusNode();
   Map<String, dynamic>? fetchedData;
 
   void fetchData(String query) async {
@@ -49,6 +50,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void dispose() {
     _controller!.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -84,6 +86,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         child: Center(
                           child: SpinKitThreeInOut(
                             color: Theme.of(context).colorScheme.primary,
+                            size: 30,
                           ),
                         ),
                       ),
@@ -91,12 +94,44 @@ class _SearchScreenState extends State<SearchScreen> {
                   if (!isLoading && fetchedData == null)
                     FutureBuilder(
                       builder: (context, snapshot) {
-                        if (!snapshot.hasData)
+                        if (!snapshot.hasData) {
                           return SliverToBoxAdapter(
-                            child: Center(child: Text("loading")),
+                            child: SpinKitThreeBounce(
+                              color: Theme.of(context).colorScheme.primary,
+                              size: 20,
+                            ),
                           );
+                        }
                         return SliverToBoxAdapter(
-                          child: Text(snapshot.data.toString()),
+                          child: Container(
+                            height: MediaQuery.of(
+                                  context,
+                                ).size.height *
+                                0.65,
+                            color: Colors.red,
+                            padding: EdgeInsets.only(
+                              bottom: MediaQuery.of(context).viewInsets.bottom,
+                            ),
+                            child: ListView.builder(
+                              itemBuilder: (context, index) => ListTile(
+                                dense: true,
+                                leading: Icon(Icons.history),
+                                title: Text(
+                                  snapshot.data![index].toString(),
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.displayLarge,
+                                ),
+                                onTap: () {
+                                  _controller?.text =
+                                      snapshot.data![index].toString();
+                                  _focusNode.requestFocus();
+                                },
+                              ),
+                              itemCount: snapshot.data?.length,
+                              reverse: true,
+                            ),
+                          ),
                         );
                       },
                       future: Provider.of<Watchlist>(
@@ -146,6 +181,7 @@ class _SearchScreenState extends State<SearchScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 20),
               child: TextField(
+                focusNode: _focusNode,
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 5,

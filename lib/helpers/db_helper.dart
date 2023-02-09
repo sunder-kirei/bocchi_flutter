@@ -118,6 +118,7 @@ class DBHelper {
       {
         "search_query": title,
       },
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
     return;
   }
