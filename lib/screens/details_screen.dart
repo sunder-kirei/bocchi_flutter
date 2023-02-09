@@ -185,7 +185,7 @@ class _DetailsScreenState extends State<DetailsScreen>
                     },
                     child: Text(
                       index != -1
-                          ? "Continue Watching \u2022 E${index + 1}"
+                          ? "Continue Watching \u2022 E${history[index]["episode"]}"
                           : "Start Watching",
                     ),
                   ),
