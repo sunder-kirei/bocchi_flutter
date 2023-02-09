@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:html/parser.dart';
 import 'package:provider/provider.dart';
 
@@ -154,6 +155,13 @@ class _DetailsScreenState extends State<DetailsScreen>
                 const SizedBox(
                   height: 30,
                 ),
+                if (fetchedData == null)
+                  Center(
+                    child: SpinKitFoldingCube(
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 50,
+                    ),
+                  ),
                 if (fetchedData != null) ...[
                   ElevatedButton(
                     onPressed: () {
@@ -176,7 +184,9 @@ class _DetailsScreenState extends State<DetailsScreen>
                       );
                     },
                     child: Text(
-                      index != -1 ? "Continue Watching" : "Start Watching",
+                      index != -1
+                          ? "Continue Watching \u2022 E${index + 1}"
+                          : "Start Watching",
                     ),
                   ),
                   const SizedBox(

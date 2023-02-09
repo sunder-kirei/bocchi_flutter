@@ -136,7 +136,7 @@ class _HomeState extends State<Home> {
         color: Theme.of(context).colorScheme.primary,
         animationCurve: Curves.easeOutCubic,
         animationDuration: const Duration(milliseconds: 300),
-        height: 60,
+        height: 50,
         index: 0,
         onTap: (value) {
           if (_currentIndex == value) return;

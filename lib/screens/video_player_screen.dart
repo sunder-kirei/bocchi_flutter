@@ -9,6 +9,7 @@ import 'package:anime_api/widgets/custom_player.dart';
 import 'package:anime_api/widgets/custom_tile.dart';
 import 'package:anime_api/widgets/hero_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
@@ -154,6 +155,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   Widget build(BuildContext context) {
     int currentLength =
         localDetail == null ? widget.details.length : localDetail!.length;
+    final prefferedTitle =
+        Provider.of<Watchlist>(context, listen: false).prefferedTitle;
+    PrefferedTitle subtitle;
+    if (prefferedTitle == PrefferedTitle.english) {
+      subtitle = PrefferedTitle.romaji;
+    } else {
+      subtitle = PrefferedTitle.english;
+    }
     return Scaffold(
       body: SafeArea(
         child: Flex(
@@ -184,8 +193,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                       : Container(
                           color: Theme.of(context).colorScheme.surface,
                           child: Center(
-                            child: CircularProgressIndicator(
-                              color: Theme.of(context).colorScheme.onBackground,
+                            child: SpinKitWave(
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ),
@@ -234,7 +243,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                                 height: 3,
                               ),
                               Text(
-                                fetchedData!["title"]["romaji"],
+                                fetchedData!["title"][prefferedTitle.name] ??
+                                    fetchedData!["title"][subtitle.name],
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: Theme.of(context)
