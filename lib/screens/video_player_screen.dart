@@ -18,6 +18,8 @@ class VideoPlayerScreen extends StatefulWidget {
   final int episode;
   final List<dynamic> details;
   final int position;
+  final String animeId;
+  final Map<String, dynamic> title;
   const VideoPlayerScreen({
     super.key,
     required this.id,
@@ -25,6 +27,8 @@ class VideoPlayerScreen extends StatefulWidget {
     required this.episode,
     required this.details,
     this.position = 0,
+    required this.animeId,
+    required this.title,
   });
   static const routeName = "/watch";
 
@@ -34,39 +38,9 @@ class VideoPlayerScreen extends StatefulWidget {
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   final ScrollController _controller = ScrollController();
-  Map<String, dynamic>? fetchedData;
-  List<dynamic>? localDetail;
   List<dynamic>? videoSources;
   int? currentEpisode;
   bool isLoading = true;
-
-  void fetchDetails() {
-    HttpHelper.getInfo(
-      malID: int.parse(widget.id),
-      provider: Stream.gogoanime,
-    ).then((value) {
-      setState(() {
-        localDetail = value["episodes"];
-      });
-    });
-  }
-
-  Future<void> getStreamInfo({required Stream provider}) async {
-    final response = await HttpHelper.getInfo(
-      malID: int.parse(widget.id),
-      provider: provider,
-    );
-    setState(() {
-      fetchedData = response;
-    });
-
-    if (fetchedData!["episodes"].length != widget.details) fetchDetails();
-
-    await getEpisode(
-      episode: currentEpisode!,
-      position: widget.position,
-    );
-  }
 
   Future<void> getEpisode({
     int episode = 1,
@@ -79,7 +53,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       episode: episode,
       image: widget.image,
       itemId: widget.id,
-      title: json.encode(fetchedData!["title"]),
+      title: json.encode(widget.title),
       position: position,
     );
     setState(() {
@@ -92,11 +66,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         duration: const Duration(milliseconds: 300),
       );
     }
-    final response = await HttpHelper.getVideo(
-      episodeID: fetchedData!["episodes"][episode - 1]["id"],
+    final response = await HttpHelper.getVideoSources(
+      episodeID: widget.details[episode - 1]["episodeId"],
+      animeId: widget.animeId,
     );
     setState(() {
-      videoSources = response["sources"];
+      videoSources = response;
       isLoading = false;
     });
   }
@@ -129,7 +104,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       episode: episode,
       image: widget.image,
       itemId: widget.id,
-      title: json.encode(fetchedData!["title"]),
+      title: json.encode(widget.title),
       position: position ?? 0,
     );
   }
@@ -147,14 +122,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       scrollToEpisode(episode: currentEpisode!);
     });
-    getStreamInfo(provider: Stream.animepahe);
+    getEpisode(
+      episode: currentEpisode!,
+      position: widget.position,
+    );
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    int currentLength =
-        localDetail == null ? widget.details.length : localDetail!.length;
+    int currentLength = widget.details.length;
     final prefferedTitle =
         Provider.of<Watchlist>(context, listen: false).prefferedTitle;
     PrefferedTitle subtitle;
@@ -227,50 +204,49 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                       const SizedBox(
                         width: 10,
                       ),
-                      if (fetchedData != null)
-                        Flexible(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                "Currently Watching",
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                              const SizedBox(
-                                height: 3,
-                              ),
-                              Text(
-                                fetchedData!["title"][prefferedTitle.name] ??
-                                    fetchedData!["title"][subtitle.name],
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .displayLarge
-                                    ?.copyWith(
-                                      fontSize: 15,
-                                    ),
-                              ),
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                "Episode",
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                              const SizedBox(
-                                height: 3,
-                              ),
-                              Text(
-                                currentEpisode.toString(),
-                                style: Theme.of(context).textTheme.displayLarge,
-                              ),
-                            ],
-                          ),
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                              "Currently Watching",
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(
+                              height: 3,
+                            ),
+                            Text(
+                              widget.title[prefferedTitle.name] ??
+                                  widget.title[subtitle.name],
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .displayLarge
+                                  ?.copyWith(
+                                    fontSize: 15,
+                                  ),
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                              "Episode",
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(
+                              height: 3,
+                            ),
+                            Text(
+                              currentEpisode.toString(),
+                              style: Theme.of(context).textTheme.displayLarge,
+                            ),
+                          ],
                         ),
+                      ),
                     ],
                   ),
                 ),
@@ -293,37 +269,34 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               child: ListView.builder(
                 controller: _controller,
                 itemBuilder: (context, index) {
-                  final data = localDetail == null
-                      ? widget.details[index]
-                      : localDetail![index];
+                  final data = widget.details[index];
+
                   return InkWell(
                     onTap: () {
-                      if (data["number"] == currentEpisode) return;
+                      if (data["epNum"] == currentEpisode) return;
                       getEpisode(
-                        episode: data["number"],
+                        episode: data["epNum"],
                         position: 0,
                       );
                     },
                     child: Container(
-                      color: data["number"] == currentEpisode
+                      color: data["epNum"] == currentEpisode
                           ? AppColors.grey
                           : null,
                       width: MediaQuery.of(context).size.width,
                       height: 100,
                       child: CustomTile(
-                        image: data["image"],
-                        episodeNumber: data["number"],
+                        image: data["thumbnail"],
+                        episodeNumber: data["epNum"],
                         airDate: data["airDate"],
                         description: data["description"],
-                        key: ValueKey(data["number"]),
+                        key: ValueKey(data["epNum"]),
                         title: data["title"],
                       ),
                     ),
                   );
                 },
-                itemCount: localDetail == null
-                    ? widget.details.length
-                    : localDetail!.length,
+                itemCount: widget.details.length,
               ),
             )
           ],

@@ -4,61 +4,52 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 enum GetLanding {
-  recent_episodes,
+  recent,
   popular,
   trending,
 }
 
-enum Stream {
-  animepahe,
-  zoro,
-  gogoanime,
-}
-
 class HttpHelper {
-  static const baseUrl = "api.consumet.org";
+  static const baseUrl = "anime-api-vnkr.onrender.com";
 
+  //broken
   static Future<Map<String, dynamic>> searchApi({
     required String query,
   }) async {
-    final url = Uri.https(baseUrl, "/meta/anilist/advanced-search", {
-      "query": query,
-    });
+    final url = Uri.https(baseUrl, "/search/$query");
     final response = await http.get(url);
     return json.decode(response.body) as Map<String, dynamic>;
   }
 
   static Future<Map<String, dynamic>> getInfo({
     required int malID,
-    Stream provider = Stream.gogoanime,
   }) async {
-    final url = Uri.https(baseUrl, "/meta/anilist/info/$malID", {
-      "provider": provider.name,
-    });
+    final url = Uri.https(baseUrl, "/info/$malID");
     final response = await http.get(url);
     return json.decode(response.body) as Map<String, dynamic>;
   }
 
-  static Future<Map<String, dynamic>> getVideo({
+  static Future<List<dynamic>> getVideoSources({
     required String episodeID,
-    Stream provider = Stream.animepahe,
+    required String animeId,
   }) async {
-    final url = Uri.https(baseUrl, "/meta/anilist/watch/$episodeID", {
-      "provider": provider.name,
-    });
+    final url = Uri.https(baseUrl, "/$animeId/$episodeID");
+    final response = await http.get(url);
+    return json.decode(response.body) as List<dynamic>;
+  }
+
+  static Future<Map<String, dynamic>> getEpisodeList({
+    required String title,
+  }) async {
+    final url = Uri.https(baseUrl, title);
     final response = await http.get(url);
     return json.decode(response.body) as Map<String, dynamic>;
   }
 
   static Future<Map<String, dynamic>> getLanding({
     required GetLanding landing,
-    Stream provider = Stream.animepahe,
   }) async {
-    final identifier = landing.name.split('_').join('-').toString();
-    final url = Uri.https(baseUrl, "/meta/anilist/$identifier", {
-      "provider": provider.name,
-      "perPage": "40",
-    });
+    final url = Uri.https(baseUrl, landing.name);
     final response = await http.get(url);
     return json.decode(response.body);
   }

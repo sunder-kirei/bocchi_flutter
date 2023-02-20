@@ -60,7 +60,7 @@ class HomeScreen extends StatelessWidget {
             CustomScrollView(
               slivers: [
                 RowSliver(
-                  option: GetLanding.recent_episodes,
+                  option: GetLanding.recent,
                 ),
               ],
             ),

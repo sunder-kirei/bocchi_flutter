@@ -46,7 +46,7 @@ class CustomTile extends StatelessWidget {
                     ? Text(
                         "Episode $episodeNumber",
                         style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                            Theme.of(context).textTheme.displayLarge?.copyWith(
                                   fontSize: 11,
                                   color: Theme.of(context).colorScheme.primary,
                                 ),

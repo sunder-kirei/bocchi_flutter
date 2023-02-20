@@ -43,7 +43,7 @@ class _CustomPlayerState extends State<CustomPlayer> {
     final streams = widget.streams;
     int index = 0;
     for (int i = 0; i < streams.length; i++) {
-      final check = int.parse(streams[i]["quality"]);
+      final check = streams[i]["resolution"];
       if (check == preferredQuality) {
         index = i;
         break;
@@ -172,7 +172,7 @@ class _CustomPlayerState extends State<CustomPlayer> {
                   children: [
                     ...(streams).asMap().entries.map((item) {
                       int index = item.key;
-                      final height = item.value["quality"];
+                      final height = item.value["resolution"];
                       dynamic size;
                       if (item.value["size"] != null) {
                         size = ((item.value["size"] / (1024 * 1024)) as double)
@@ -209,7 +209,7 @@ class _CustomPlayerState extends State<CustomPlayer> {
           },
           iconData: Icons.settings,
           title: "Quality",
-          subtitle: "${streams[quality!]["quality"]}p",
+          subtitle: "${streams[quality!]["resolution"]}p",
         ),
       ],
     );
