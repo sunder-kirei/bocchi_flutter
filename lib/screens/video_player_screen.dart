@@ -16,18 +16,16 @@ class VideoPlayerScreen extends StatefulWidget {
   final String id;
   final String image;
   final int episode;
-  final List<dynamic> details;
+  final List<dynamic> gogoDetails;
   final int position;
-  final String animeId;
   final Map<String, dynamic> title;
   const VideoPlayerScreen({
     super.key,
     required this.id,
     required this.image,
     required this.episode,
-    required this.details,
+    required this.gogoDetails,
     this.position = 0,
-    required this.animeId,
     required this.title,
   });
   static const routeName = "/watch";
@@ -41,6 +39,27 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   List<dynamic>? videoSources;
   int? currentEpisode;
   bool isLoading = true;
+  Map<String, dynamic>? animepaheData;
+  bool hasError = false;
+
+  Future<void> fetchEpisodeList() async {
+    final result = await HttpHelper.getEpisodeList(
+      title: widget.title["romaji"] ?? "",
+    );
+    if (result["error"] != null) {
+      setState(() {
+        hasError = true;
+      });
+      return;
+    }
+    setState(() {
+      animepaheData = result;
+    });
+    getEpisode(
+      episode: currentEpisode!,
+      position: widget.position,
+    );
+  }
 
   Future<void> getEpisode({
     int episode = 1,
@@ -67,8 +86,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       );
     }
     final response = await HttpHelper.getVideoSources(
-      episodeID: widget.details[episode - 1]["episodeId"],
-      animeId: widget.animeId,
+      episodeID: animepaheData!["episodes"][episode - 1]["episodeId"],
+      animeId: animepaheData!["animeId"],
     );
     setState(() {
       videoSources = response;
@@ -122,16 +141,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       scrollToEpisode(episode: currentEpisode!);
     });
-    getEpisode(
-      episode: currentEpisode!,
-      position: widget.position,
-    );
+    fetchEpisodeList();
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    int currentLength = widget.details.length;
+    int currentLength = widget.gogoDetails.length;
     final prefferedTitle =
         Provider.of<Watchlist>(context, listen: false).prefferedTitle;
     PrefferedTitle subtitle;
@@ -150,31 +166,43 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               children: [
                 AspectRatio(
                   aspectRatio: 16 / 9,
-                  child: isLoading == false && videoSources != null
-                      ? CustomPlayer(
-                          streams: videoSources!,
-                          callback: callback,
-                          initialPosition: currentEpisode == widget.episode
-                              ? widget.position
-                              : 0,
-                          nextEpisode: () {
-                            getEpisode(
-                              episode: currentEpisode == currentLength
-                                  ? currentLength + 1
-                                  : currentEpisode! + 1,
-                              position: 0,
-                            );
-                          },
-                          isLast: currentEpisode == currentLength,
-                        )
-                      : Container(
-                          color: Theme.of(context).colorScheme.surface,
-                          child: Center(
-                            child: SpinKitWave(
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
+                  child: hasError
+                      ? Center(
+                          child: Text(
+                            "Sorry, Anime not found🥲",
+                            style: Theme.of(context).textTheme.displayLarge,
                           ),
-                        ),
+                        )
+                      : animepaheData == null
+                          ? SpinKitRipple(
+                              color: Theme.of(context).colorScheme.primary)
+                          : isLoading == false && videoSources != null
+                              ? CustomPlayer(
+                                  streams: videoSources!,
+                                  callback: callback,
+                                  initialPosition:
+                                      currentEpisode == widget.episode
+                                          ? widget.position
+                                          : 0,
+                                  nextEpisode: () {
+                                    getEpisode(
+                                      episode: currentEpisode == currentLength
+                                          ? currentLength + 1
+                                          : currentEpisode! + 1,
+                                      position: 0,
+                                    );
+                                  },
+                                  isLast: currentEpisode == currentLength,
+                                )
+                              : Container(
+                                  color: Theme.of(context).colorScheme.surface,
+                                  child: Center(
+                                    child: SpinKitWave(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                  ),
+                                ),
                 ),
                 Container(
                   padding: const EdgeInsets.all(8.0),
@@ -269,34 +297,34 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               child: ListView.builder(
                 controller: _controller,
                 itemBuilder: (context, index) {
-                  final data = widget.details[index];
+                  final data = widget.gogoDetails[index];
 
                   return InkWell(
                     onTap: () {
-                      if (data["epNum"] == currentEpisode) return;
+                      if (data["number"] == currentEpisode) return;
                       getEpisode(
-                        episode: data["epNum"],
+                        episode: data["number"],
                         position: 0,
                       );
                     },
                     child: Container(
-                      color: data["epNum"] == currentEpisode
+                      color: data["number"] == currentEpisode
                           ? AppColors.grey
                           : null,
                       width: MediaQuery.of(context).size.width,
                       height: 100,
                       child: CustomTile(
-                        image: data["thumbnail"],
-                        episodeNumber: data["epNum"],
+                        image: data["image"],
+                        episodeNumber: data["number"],
                         airDate: data["airDate"],
                         description: data["description"],
-                        key: ValueKey(data["epNum"]),
+                        key: ValueKey(data["number"]),
                         title: data["title"],
                       ),
                     ),
                   );
                 },
-                itemCount: widget.details.length,
+                itemCount: widget.gogoDetails.length,
               ),
             )
           ],

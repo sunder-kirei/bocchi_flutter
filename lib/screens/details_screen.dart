@@ -32,7 +32,6 @@ class _DetailsScreenState extends State<DetailsScreen>
     parent: _animationController,
     curve: Curves.easeInCubic,
   );
-  Map<String, dynamic>? episodeList;
 
   @override
   void dispose() {
@@ -47,25 +46,14 @@ class _DetailsScreenState extends State<DetailsScreen>
         (ModalRoute.of(context)?.settings.arguments
             as Map<String, dynamic>)["id"],
       )),
-    )
-        .then(
-          (value) {
-            setState(() {
-              fetchedData = value;
-            });
-            return value;
-          },
-        )
-        .then(
-          (value) => HttpHelper.getEpisodeList(
-            title: value["title"]["romaji"],
-          ),
-        )
-        .then((value) {
-          setState(() {
-            episodeList = value;
-          });
+    ).then(
+      (value) {
+        setState(() {
+          fetchedData = value;
         });
+        return value;
+      },
+    );
 
     super.didChangeDependencies();
   }
@@ -177,17 +165,16 @@ class _DetailsScreenState extends State<DetailsScreen>
                   ),
                 if (fetchedData != null) ...[
                   ElevatedButton(
-                    onPressed: episodeList == null
+                    onPressed: fetchedData!["episodes"].length == 0
                         ? null
                         : () {
-                            final data = episodeList!["episodes"][0];
+                            final data = fetchedData!["episodes"][0];
                             Navigator.of(context).push(
                               CustomRoute(
                                 builder: (context) {
                                   return VideoPlayerScreen(
-                                    animeId: episodeList!["animeId"],
                                     title: fetchedData!["title"],
-                                    details: episodeList!["episodes"],
+                                    gogoDetails: fetchedData!["episodes"],
                                     episode: index != -1
                                         ? history[index]["episode"]
                                         : data["number"],
@@ -264,31 +251,19 @@ class _DetailsScreenState extends State<DetailsScreen>
               ],
             ),
           ),
-          if (fetchedData != null && episodeList == null)
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                child: Center(
-                  child: SpinKitRipple(
-                    color: Theme.of(context).colorScheme.primary,
-                    size: 50,
-                  ),
-                ),
-              ),
-            ),
-          if (episodeList != null)
+          if (fetchedData != null)
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  final data = episodeList!["episodes"][index];
+                  // final data = episodeList!["episodes"][index];
+                  final data = fetchedData!["episodes"][index];
                   return InkWell(
                     onTap: () => Navigator.of(context).push(
                       CustomRoute(
                         builder: (context) => VideoPlayerScreen(
                           title: fetchedData!["title"],
-                          animeId: episodeList!["animeId"],
-                          details: episodeList!["episodes"],
-                          episode: data["epNum"],
+                          gogoDetails: fetchedData!["episodes"],
+                          episode: data["number"],
                           image: fetchedData!["image"],
                           id: fetchedData!["id"],
                         ),
@@ -298,17 +273,17 @@ class _DetailsScreenState extends State<DetailsScreen>
                       width: MediaQuery.of(context).size.width,
                       height: 100,
                       child: CustomTile(
-                        image: data["thumbnail"],
-                        episodeNumber: data["epNum"],
+                        image: data["image"],
+                        episodeNumber: data["number"],
                         airDate: data["airDate"],
                         description: data["description"],
-                        key: ValueKey(data["epNum"]),
+                        key: ValueKey(data["number"]),
                         title: data["title"],
                       ),
                     ),
                   );
                 },
-                childCount: episodeList!["episodes"].length,
+                childCount: fetchedData!["episodes"].length,
               ),
             ),
           if (fetchedData != null) ...[
@@ -426,7 +401,7 @@ class _DetailsScreenState extends State<DetailsScreen>
                                 RowItem(
                                   title: data["title"],
                                   tag: data["id"].toString(),
-                                  image: data["image"],
+                                  image: data["image"] ?? "",
                                   id: data["id"].toString(),
                                   disabled: (data["status"]
                                                   .toString()

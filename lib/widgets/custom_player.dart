@@ -192,7 +192,7 @@ class _CustomPlayerState extends State<CustomPlayer> {
                           toggleQuality(index);
                           Navigator.of(context).pop();
                         },
-                        trailing: height == "1080" || height == "720"
+                        trailing: height == 1080 || height == 720
                             ? Icon(
                                 Icons.hd_outlined,
                                 color: Theme.of(
