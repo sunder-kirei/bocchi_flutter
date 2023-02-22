@@ -33,15 +33,16 @@ class HttpHelper {
     required String episodeID,
     required String animeId,
   }) async {
-    final url = Uri.https(baseUrl, "/$animeId/$episodeID");
+    final url = Uri.https(baseUrl, "/watch/$animeId/$episodeID");
     final response = await http.get(url);
     return json.decode(response.body) as List<dynamic>;
   }
 
   static Future<Map<String, dynamic>> getEpisodeList({
     required String title,
+    required int releasedYear,
   }) async {
-    final url = Uri.https(baseUrl, title);
+    final url = Uri.https(baseUrl, "$title/$releasedYear");
     final response = await http.get(url);
     return json.decode(response.body) as Map<String, dynamic>;
   }

@@ -173,6 +173,7 @@ class _DetailsScreenState extends State<DetailsScreen>
                               CustomRoute(
                                 builder: (context) {
                                   return VideoPlayerScreen(
+                                    releasedYear: fetchedData!["releaseDate"],
                                     title: fetchedData!["title"],
                                     gogoDetails: fetchedData!["episodes"],
                                     episode: index != -1
@@ -261,6 +262,7 @@ class _DetailsScreenState extends State<DetailsScreen>
                     onTap: () => Navigator.of(context).push(
                       CustomRoute(
                         builder: (context) => VideoPlayerScreen(
+                          releasedYear: fetchedData!["releaseDate"],
                           title: fetchedData!["title"],
                           gogoDetails: fetchedData!["episodes"],
                           episode: data["number"],
