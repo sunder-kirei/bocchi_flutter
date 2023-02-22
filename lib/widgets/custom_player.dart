@@ -173,11 +173,8 @@ class _CustomPlayerState extends State<CustomPlayer> {
                     ...(streams).asMap().entries.map((item) {
                       int index = item.key;
                       final height = item.value["resolution"];
-                      dynamic size;
-                      if (item.value["size"] != null) {
-                        size = ((item.value["size"] / (1024 * 1024)) as double)
-                            .toStringAsFixed(2);
-                      }
+                      final streamInfo = item.value["streamInfo"];
+
                       return ListTile(
                         leading: Icon(
                           Icons.check_rounded,
@@ -185,9 +182,7 @@ class _CustomPlayerState extends State<CustomPlayer> {
                               ? Theme.of(context).colorScheme.onBackground
                               : Colors.transparent,
                         ),
-                        title: size == null
-                            ? Text("${height}p")
-                            : Text("${height}p\t\t(${size}MB)"),
+                        title: Text("$streamInfo"),
                         onTap: () {
                           toggleQuality(index);
                           Navigator.of(context).pop();
