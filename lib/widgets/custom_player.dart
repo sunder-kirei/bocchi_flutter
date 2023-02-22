@@ -173,6 +173,7 @@ class _CustomPlayerState extends State<CustomPlayer> {
                     ...(streams).asMap().entries.map((item) {
                       int index = item.key;
                       final height = item.value["resolution"];
+                      final audio = item.value["audio"];
                       final streamInfo = item.value["streamInfo"];
 
                       return ListTile(
@@ -182,7 +183,7 @@ class _CustomPlayerState extends State<CustomPlayer> {
                               ? Theme.of(context).colorScheme.onBackground
                               : Colors.transparent,
                         ),
-                        title: Text("$streamInfo"),
+                        title: Text("$streamInfo \u2022 $audio"),
                         onTap: () {
                           toggleQuality(index);
                           Navigator.of(context).pop();
