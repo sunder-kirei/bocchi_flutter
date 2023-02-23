@@ -41,8 +41,9 @@ class HttpHelper {
   static Future<Map<String, dynamic>> getEpisodeList({
     required String title,
     required int releasedYear,
+    String? season = "unknown",
   }) async {
-    final url = Uri.https(baseUrl, "$title/$releasedYear");
+    final url = Uri.https(baseUrl, "$title/$releasedYear/$season");
     final response = await http.get(url);
     return json.decode(response.body) as Map<String, dynamic>;
   }

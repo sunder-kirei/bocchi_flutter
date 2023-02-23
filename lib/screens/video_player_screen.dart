@@ -20,6 +20,7 @@ class VideoPlayerScreen extends StatefulWidget {
   final int position;
   final Map<String, dynamic> title;
   final int releasedYear;
+  final String? season;
   const VideoPlayerScreen({
     super.key,
     required this.id,
@@ -29,6 +30,7 @@ class VideoPlayerScreen extends StatefulWidget {
     this.position = 0,
     required this.title,
     required this.releasedYear,
+    this.season,
   });
   static const routeName = "/watch";
 
@@ -48,6 +50,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     final result = await HttpHelper.getEpisodeList(
       title: widget.title["romaji"] ?? "",
       releasedYear: widget.releasedYear,
+      season: widget.season,
     );
     if (result["error"] != null) {
       setState(() {
