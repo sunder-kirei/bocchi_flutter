@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:transparent_image/transparent_image.dart';
+import "package:cached_network_image/cached_network_image.dart";
 
 class HeroImage extends StatelessWidget {
   final String imageUrl;
@@ -16,21 +16,17 @@ class HeroImage extends StatelessWidget {
       tag: tag,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(5),
-        child: Image.network(
-          imageUrl,
+        child: CachedNetworkImage(
+          imageUrl: imageUrl,
           fit: BoxFit.cover,
           key: ValueKey(
             tag,
           ),
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress?.cumulativeBytesLoaded ==
-                loadingProgress?.expectedTotalBytes) return child;
-            return Center(
-              child: CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.onBackground,
-              ),
-            );
-          },
+          progressIndicatorBuilder: (context, url, loadingProgress) => Center(
+            child: CircularProgressIndicator(
+              color: Theme.of(context).colorScheme.onBackground,
+            ),
+          ),
         ),
       ),
     );
