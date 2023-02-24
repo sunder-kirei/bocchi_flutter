@@ -47,24 +47,24 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   bool hasError = false;
 
   Future<void> fetchEpisodeList() async {
-    final result = await HttpHelper.getEpisodeList(
-      title: widget.title["romaji"] ?? "",
-      releasedYear: widget.releasedYear,
-      season: widget.season,
-    );
-    if (result["error"] != null) {
+    try {
+      final result = await HttpHelper.getEpisodeList(
+        title: widget.title["romaji"] ?? "",
+        releasedYear: widget.releasedYear,
+        season: widget.season,
+      );
+      setState(() {
+        animepaheData = result;
+      });
+      getEpisode(
+        episode: currentEpisode!,
+        position: widget.position,
+      );
+    } catch (err) {
       setState(() {
         hasError = true;
       });
-      return;
     }
-    setState(() {
-      animepaheData = result;
-    });
-    getEpisode(
-      episode: currentEpisode!,
-      position: widget.position,
-    );
   }
 
   Future<void> getEpisode({

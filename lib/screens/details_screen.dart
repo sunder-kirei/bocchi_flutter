@@ -5,6 +5,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:html/parser.dart';
 import 'package:provider/provider.dart';
 
+import '../constants/app_colors.dart';
 import '../helpers/custom_route.dart';
 import '../helpers/http_helper.dart';
 import '../screens/video_player_screen.dart';
@@ -25,6 +26,9 @@ class DetailsScreen extends StatefulWidget {
 class _DetailsScreenState extends State<DetailsScreen>
     with TickerProviderStateMixin {
   Map<String, dynamic>? fetchedData;
+  bool hasError = false;
+  String? errorMessage;
+
   late final AnimationController _animationController = AnimationController(
       vsync: this, duration: const Duration(milliseconds: 500))
     ..forward();
@@ -32,6 +36,28 @@ class _DetailsScreenState extends State<DetailsScreen>
     parent: _animationController,
     curve: Curves.easeInCubic,
   );
+
+  void getData() async {
+    try {
+      setState(() {
+        hasError = false;
+      });
+      final result = await HttpHelper.getInfo(
+        malID: (int.parse(
+          (ModalRoute.of(context)?.settings.arguments
+              as Map<String, dynamic>)["id"],
+        )),
+      );
+      setState(() {
+        fetchedData = result;
+      });
+    } catch (err) {
+      setState(() {
+        hasError = true;
+        errorMessage = err.toString();
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -41,20 +67,7 @@ class _DetailsScreenState extends State<DetailsScreen>
 
   @override
   void didChangeDependencies() {
-    HttpHelper.getInfo(
-      malID: (int.parse(
-        (ModalRoute.of(context)?.settings.arguments
-            as Map<String, dynamic>)["id"],
-      )),
-    ).then(
-      (value) {
-        setState(() {
-          fetchedData = value;
-        });
-        return value;
-      },
-    );
-
+    getData();
     super.didChangeDependencies();
   }
 
@@ -147,115 +160,145 @@ class _DetailsScreenState extends State<DetailsScreen>
               ),
             ),
           ),
-          SliverToBoxAdapter(
-            child: Flex(
-              direction: Axis.vertical,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                const SizedBox(
-                  height: 30,
-                ),
-                if (fetchedData == null)
-                  Center(
-                    child: SpinKitFoldingCube(
-                      color: Theme.of(context).colorScheme.primary,
-                      size: 50,
-                    ),
-                  ),
-                if (fetchedData != null) ...[
-                  ElevatedButton(
-                    onPressed: fetchedData!["episodes"].length == 0
-                        ? null
-                        : () {
-                            final data = fetchedData!["episodes"][0];
-                            Navigator.of(context).push(
-                              CustomRoute(
-                                builder: (context) {
-                                  return VideoPlayerScreen(
-                                    season: fetchedData!["season"]
-                                        ?.toString()
-                                        .trim()
-                                        .toLowerCase(),
-                                    releasedYear: fetchedData!["releaseDate"],
-                                    title: fetchedData!["title"],
-                                    gogoDetails: fetchedData!["episodes"],
-                                    episode: index != -1
-                                        ? history[index]["episode"]
-                                        : data["number"],
-                                    image: fetchedData!["image"],
-                                    id: fetchedData!["id"],
-                                    position: index != -1
-                                        ? history[index]["position"]
-                                        : 0,
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                    child: Text(
-                      index != -1
-                          ? "Continue Watching \u2022 E${history[index]["episode"]}"
-                          : "Start Watching",
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  if (fetchedData!["description"] != null)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8.0,
-                      ),
-                      child: RichText(
-                        maxLines: 15,
-                        overflow: TextOverflow.ellipsis,
-                        text: TextSpan(
-                          text: "Overview: ",
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    color: Colors.amber,
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: 13,
-                                  ),
-                          children: [
-                            TextSpan(
-                              text: parse(fetchedData!["description"])
-                                  .body
-                                  ?.text as String,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                    color: Colors.grey,
-                                    fontSize: 13,
-                                  ),
-                            ),
-                          ],
+          hasError
+              ? SliverToBoxAdapter(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          errorMessage!,
+                          style: Theme.of(context).textTheme.displayLarge,
+                          textAlign: TextAlign.center,
                         ),
                       ),
-                    ),
-                  const SizedBox(
-                    height: 10,
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.lightblack,
+                          foregroundColor: AppColors.green,
+                          minimumSize: const Size(150, 45),
+                        ),
+                        onPressed: getData,
+                        child: const Text("Refresh"),
+                      ),
+                    ],
                   ),
-                  if (fetchedData!["totalEpisodes"] > 0)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8.0,
-                        vertical: 10,
+                )
+              : SliverToBoxAdapter(
+                  child: Flex(
+                    direction: Axis.vertical,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      const SizedBox(
+                        height: 30,
                       ),
-                      child: Text(
-                        "Episodes",
-                        style:
-                            Theme.of(context).textTheme.displayLarge?.copyWith(
-                                  fontSize: 24,
-                                ),
-                      ),
-                    ),
-                ],
-              ],
-            ),
-          ),
+                      if (fetchedData == null)
+                        Center(
+                          child: SpinKitFoldingCube(
+                            color: Theme.of(context).colorScheme.primary,
+                            size: 50,
+                          ),
+                        ),
+                      if (fetchedData != null) ...[
+                        ElevatedButton(
+                          onPressed: fetchedData!["episodes"].length == 0
+                              ? null
+                              : () {
+                                  final data = fetchedData!["episodes"][0];
+                                  Navigator.of(context).push(
+                                    CustomRoute(
+                                      builder: (context) {
+                                        return VideoPlayerScreen(
+                                          season: fetchedData!["season"]
+                                              ?.toString()
+                                              .trim()
+                                              .toLowerCase(),
+                                          releasedYear:
+                                              fetchedData!["releaseDate"],
+                                          title: fetchedData!["title"],
+                                          gogoDetails: fetchedData!["episodes"],
+                                          episode: index != -1
+                                              ? history[index]["episode"]
+                                              : data["number"],
+                                          image: fetchedData!["image"],
+                                          id: fetchedData!["id"],
+                                          position: index != -1
+                                              ? history[index]["position"]
+                                              : 0,
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                          child: Text(
+                            index != -1
+                                ? "Continue Watching \u2022 E${history[index]["episode"]}"
+                                : "Start Watching",
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        if (fetchedData!["description"] != null)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0,
+                            ),
+                            child: RichText(
+                              maxLines: 15,
+                              overflow: TextOverflow.ellipsis,
+                              text: TextSpan(
+                                text: "Overview: ",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(
+                                      color: Colors.amber,
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 13,
+                                    ),
+                                children: [
+                                  TextSpan(
+                                    text: parse(fetchedData!["description"])
+                                        .body
+                                        ?.text as String,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(
+                                          color: Colors.grey,
+                                          fontSize: 13,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        if (fetchedData!["totalEpisodes"] > 0)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0,
+                              vertical: 10,
+                            ),
+                            child: Text(
+                              "Episodes",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .displayLarge
+                                  ?.copyWith(
+                                    fontSize: 24,
+                                  ),
+                            ),
+                          ),
+                      ],
+                    ],
+                  ),
+                ),
           if (fetchedData != null)
             SliverList(
               delegate: SliverChildBuilderDelegate(
@@ -455,7 +498,7 @@ class _DetailsScreenState extends State<DetailsScreen>
                 ),
               ),
             ]
-          ]
+          ],
         ],
       ),
     );

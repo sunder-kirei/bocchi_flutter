@@ -1,6 +1,7 @@
 // ignore_for_file: constant_identifier_names
 
 import 'dart:convert';
+import 'package:anime_api/helpers/http_exception.dart';
 import 'package:http/http.dart' as http;
 
 enum GetLanding {
@@ -12,21 +13,34 @@ enum GetLanding {
 class HttpHelper {
   static const baseUrl = "anime-api-vnkr.onrender.com";
 
-  //broken
   static Future<Map<String, dynamic>> searchApi({
     required String query,
   }) async {
     final url = Uri.https(baseUrl, "/search/$query");
-    final response = await http.get(url);
-    return json.decode(response.body) as Map<String, dynamic>;
+    try {
+      final response = await http.get(url);
+      return json.decode(response.body) as Map<String, dynamic>;
+    } catch (err) {
+      throw ApiException(
+        error: err.toString(),
+        message: "Failed to search.",
+      );
+    }
   }
 
   static Future<Map<String, dynamic>> getInfo({
     required int malID,
   }) async {
     final url = Uri.https(baseUrl, "/info/$malID");
-    final response = await http.get(url);
-    return json.decode(response.body) as Map<String, dynamic>;
+    try {
+      final response = await http.get(url);
+      return json.decode(response.body) as Map<String, dynamic>;
+    } catch (err) {
+      throw ApiException(
+        error: err.toString(),
+        message: "Failed to load info.",
+      );
+    }
   }
 
   static Future<List<dynamic>> getVideoSources({
@@ -34,8 +48,15 @@ class HttpHelper {
     required String animeId,
   }) async {
     final url = Uri.https(baseUrl, "/watch/$animeId/$episodeID");
-    final response = await http.get(url);
-    return json.decode(response.body) as List<dynamic>;
+    try {
+      final response = await http.get(url);
+      return json.decode(response.body) as List<dynamic>;
+    } catch (err) {
+      throw ApiException(
+        error: err.toString(),
+        message: "Failed to load streaming info.",
+      );
+    }
   }
 
   static Future<Map<String, dynamic>> getEpisodeList({
@@ -44,15 +65,29 @@ class HttpHelper {
     String? season = "unknown",
   }) async {
     final url = Uri.https(baseUrl, "$title/$releasedYear/$season");
-    final response = await http.get(url);
-    return json.decode(response.body) as Map<String, dynamic>;
+    try {
+      final response = await http.get(url);
+      return json.decode(response.body) as Map<String, dynamic>;
+    } catch (err) {
+      throw ApiException(
+        error: err.toString(),
+        message: "Failed to load episode info.",
+      );
+    }
   }
 
   static Future<Map<String, dynamic>> getLanding({
     required GetLanding landing,
   }) async {
     final url = Uri.https(baseUrl, landing.name);
-    final response = await http.get(url);
-    return json.decode(response.body);
+    try {
+      final response = await http.get(url);
+      return json.decode(response.body);
+    } catch (err) {
+      throw ApiException(
+        error: err.toString(),
+        message: "Looks like there was a network failure.",
+      );
+    }
   }
 }
