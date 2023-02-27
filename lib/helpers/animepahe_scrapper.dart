@@ -28,7 +28,7 @@ class AnimeScrapper {
         "type": anime["type"],
         "status": anime["status"],
         "season": anime["season"].toString().toLowerCase().trim(),
-        "year": anime["year"].toString() ?? "unknown",
+        "year": anime["year"].toString(),
         "score": anime["score"],
       };
     }).toList();
