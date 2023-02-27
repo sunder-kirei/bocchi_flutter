@@ -52,6 +52,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         title: widget.title["romaji"] ?? "",
         releasedYear: widget.releasedYear,
         season: widget.season,
+        page: (currentEpisode! / 30).ceil(),
       );
       setState(() {
         animepaheData = result;
@@ -92,7 +93,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       );
     }
     final response = await HttpHelper.getVideoSources(
-      episodeID: animepaheData!["episodes"][episode - 1]["episodeId"],
+      episodeID: animepaheData!["episodes"][(episode - 1) % 30]["episodeId"],
       animeId: animepaheData!["animeId"],
     );
     setState(() {

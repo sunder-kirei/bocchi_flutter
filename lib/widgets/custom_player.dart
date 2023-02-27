@@ -43,7 +43,7 @@ class _CustomPlayerState extends State<CustomPlayer> {
     final streams = widget.streams;
     int index = 0;
     for (int i = 0; i < streams.length; i++) {
-      final check = streams[i]["resolution"];
+      final check = int.parse(streams[i]["resolution"]);
       if (check == preferredQuality) {
         index = i;
         break;

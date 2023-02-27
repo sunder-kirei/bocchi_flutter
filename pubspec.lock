@@ -717,6 +717,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.1"
+  web_scraper:
+    dependency: "direct main"
+    description:
+      name: web_scraper
+      sha256: "34d41de25c1aaeeca2cd91c1d062ee3126f59db6c84ec32da17d44d082ecc177"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.4"
   win32:
     dependency: transitive
     description:
