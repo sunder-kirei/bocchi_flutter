@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'package:anime_api/helpers/http_exception.dart';
+import './animepahe_scrapper.dart';
 import 'package:http/http.dart' as http;
 
 enum GetLanding {
@@ -47,10 +48,12 @@ class HttpHelper {
     required String episodeID,
     required String animeId,
   }) async {
-    final url = Uri.https(baseUrl, "/watch/$animeId/$episodeID");
     try {
-      final response = await http.get(url);
-      return json.decode(response.body) as List<dynamic>;
+      final sourceList = await AnimeScrapper.fetchAnimepaheEpisodesSources(
+        animeId: animeId,
+        episodeId: episodeID,
+      );
+      return sourceList;
     } catch (err) {
       throw ApiException(
         error: err.toString(),
@@ -62,12 +65,24 @@ class HttpHelper {
   static Future<Map<String, dynamic>> getEpisodeList({
     required String title,
     required int releasedYear,
-    String? season = "unknown",
+    String? season,
+    required int page,
   }) async {
-    final url = Uri.https(baseUrl, "$title/$releasedYear/$season");
     try {
-      final response = await http.get(url);
-      return json.decode(response.body) as Map<String, dynamic>;
+      final animeId = await AnimeScrapper.getAnimepaheId(
+        query: title,
+        releasedYear: releasedYear.toString(),
+        season: season ?? "unknown",
+      );
+
+      final episodeList = await AnimeScrapper.fetchAnimepaheEpisodes(
+        animeId: animeId,
+        page: page,
+      );
+      return {
+        "episodes": episodeList,
+        "animeId": animeId,
+      };
     } catch (err) {
       throw ApiException(
         error: err.toString(),
