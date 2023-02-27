@@ -107,16 +107,26 @@ class AnimeScrapper {
     }).toList();
     final streamInfoList =
         parsedResponse.getElementById("pickDownload")?.children;
-    final referrerList = sourceList?.map((e) => e["referrer"]).toList();
+    final referrerList = sourceList
+        ?.map(
+          (e) => {
+            "url": e["referrer"],
+            "audio": e["audio"],
+            "resolution": e["resolution"],
+          },
+        )
+        .toList();
     final apiCall = Uri.https(_apiUrl, "/watch", {
       "url": json.encode(referrerList),
     });
-    final kwikUrl = json.decode((await get(apiCall)).body);
+    final kwikUrl = json.decode((await get(apiCall)).body) as List<dynamic>;
     int size = sourceList?.length as int;
     for (int i = 0; i < size; i++) {
       sourceList![i] = {
         ...sourceList[i],
-        "url": kwikUrl[i],
+        "url": kwikUrl.firstWhere((element) =>
+            element["audio"] == sourceList[i]["audio"] &&
+            element["resolution"] == sourceList[i]["resolution"])["url"],
         "streamInfo": streamInfoList![i].firstChild?.text ?? "",
       };
     }
