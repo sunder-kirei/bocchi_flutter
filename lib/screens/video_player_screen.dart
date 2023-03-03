@@ -54,6 +54,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         season: widget.season,
         page: (currentEpisode! / 30).ceil(),
       );
+      // print(result);
       setState(() {
         animepaheData = result;
       });

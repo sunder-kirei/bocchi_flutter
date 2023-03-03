@@ -64,6 +64,7 @@ class _CustomPlayerState extends State<CustomPlayer> {
   @override
   void initState() {
     int index = getPreferredQuality();
+    print(widget.streams);
     initPlayer(
       index: index,
       position: Duration(
@@ -103,8 +104,9 @@ class _CustomPlayerState extends State<CustomPlayer> {
     streams = streams.map((item) {
       return {
         ...item,
-        "url":
-            "${item["url"].toString().substring(0, 15)}files${item["url"].toString().substring(20)}",
+        // "url":
+        //     "${item["url"].toString().substring(0, 15)}files${item["url"].toString().substring(20)}",
+        "url": item["url"].toString().replaceFirst("cache", "files"),
       };
     }).toList();
 
