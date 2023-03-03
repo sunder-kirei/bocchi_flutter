@@ -41,9 +41,7 @@ class AnimeScrapper {
         return element["year"].toString() == releasedYear &&
             element["season"].toString() == season;
       },
-      orElse: () => {
-        "error": "No anime found",
-      },
+      orElse: () => searchList[0],
     );
     if (foundAnime["error"] != null) {
       return "";

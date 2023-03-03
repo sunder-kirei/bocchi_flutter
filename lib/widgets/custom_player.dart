@@ -64,7 +64,6 @@ class _CustomPlayerState extends State<CustomPlayer> {
   @override
   void initState() {
     int index = getPreferredQuality();
-    print(widget.streams);
     initPlayer(
       index: index,
       position: Duration(

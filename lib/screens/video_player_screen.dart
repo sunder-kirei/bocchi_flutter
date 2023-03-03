@@ -54,7 +54,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         season: widget.season,
         page: (currentEpisode! / 30).ceil(),
       );
-      // print(result);
       setState(() {
         animepaheData = result;
       });
@@ -93,14 +92,20 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         duration: const Duration(milliseconds: 300),
       );
     }
-    final response = await HttpHelper.getVideoSources(
-      episodeID: animepaheData!["episodes"][(episode - 1) % 30]["episodeId"],
-      animeId: animepaheData!["animeId"],
-    );
-    setState(() {
-      videoSources = response;
-      isLoading = false;
-    });
+    try {
+      final response = await HttpHelper.getVideoSources(
+        episodeID: animepaheData!["episodes"][(episode - 1) % 30]["episodeId"],
+        animeId: animepaheData!["animeId"],
+      );
+      setState(() {
+        videoSources = response;
+        isLoading = false;
+      });
+    } catch (err) {
+      setState(() {
+        hasError = true;
+      });
+    }
   }
 
   void scrollToEpisode({
