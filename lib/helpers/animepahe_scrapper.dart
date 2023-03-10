@@ -5,7 +5,8 @@ import 'package:html/parser.dart' as html;
 
 class AnimeScrapper {
   static const _baseUrl = "animepahe.com";
-  static const _apiUrl = "anime-api-vnkr.onrender.com";
+  // static const _apiUrl = "anime-api-vnkr.onrender.com";
+  static const _apiUrl = "relieved-cyan-tuxedo.cyclic.app";
   static const _headers = {
     "User-Agent":
         "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Mobile Safari/537.36",
