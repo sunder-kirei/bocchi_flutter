@@ -12,7 +12,7 @@ enum GetLanding {
 }
 
 class HttpHelper {
-  static const baseUrl = "anime-api-vnkr.onrender.com";
+  static const baseUrl = "relieved-cyan-tuxedo.cyclic.app";
 
   static Future<Map<String, dynamic>> searchApi({
     required String query,

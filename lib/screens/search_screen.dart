@@ -241,12 +241,15 @@ class _SearchScreenState extends State<SearchScreen> {
                 onEditingComplete: () {
                   FocusScope.of(context).unfocus();
                   fetchData(_controller!.text);
-                  Provider.of<Watchlist>(
-                    context,
-                    listen: false,
-                  ).addToSearchHistory(
-                    title: _controller!.text.trim().toLowerCase(),
-                  );
+                  final title = _controller!.text.trim().toLowerCase();
+                  if (title.isNotEmpty) {
+                    Provider.of<Watchlist>(
+                      context,
+                      listen: false,
+                    ).addToSearchHistory(
+                      title: _controller!.text.trim().toLowerCase(),
+                    );
+                  }
                 },
               ),
             ),

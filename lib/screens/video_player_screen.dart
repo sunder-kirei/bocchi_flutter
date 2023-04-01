@@ -16,21 +16,19 @@ class VideoPlayerScreen extends StatefulWidget {
   final String id;
   final String image;
   final int episode;
-  final List<dynamic> gogoDetails;
+  final List<dynamic> episodeList;
+  final String animeId;
   final int position;
   final Map<String, dynamic> title;
-  final int releasedYear;
-  final String? season;
   const VideoPlayerScreen({
     super.key,
     required this.id,
     required this.image,
     required this.episode,
-    required this.gogoDetails,
+    required this.episodeList,
     this.position = 0,
     required this.title,
-    required this.releasedYear,
-    this.season,
+    required this.animeId,
   });
   static const routeName = "/watch";
 
@@ -43,30 +41,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   List<dynamic>? videoSources;
   int? currentEpisode;
   bool isLoading = true;
-  Map<String, dynamic>? animepaheData;
   bool hasError = false;
-
-  Future<void> fetchEpisodeList() async {
-    try {
-      final result = await HttpHelper.getEpisodeList(
-        title: widget.title["romaji"] ?? "",
-        releasedYear: widget.releasedYear,
-        season: widget.season,
-        page: (currentEpisode! / 30).ceil(),
-      );
-      setState(() {
-        animepaheData = result;
-      });
-      getEpisode(
-        episode: currentEpisode!,
-        position: widget.position,
-      );
-    } catch (err) {
-      setState(() {
-        hasError = true;
-      });
-    }
-  }
 
   Future<void> getEpisode({
     int episode = 1,
@@ -94,8 +69,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     }
     try {
       final response = await HttpHelper.getVideoSources(
-        episodeID: animepaheData!["episodes"][(episode - 1) % 30]["episodeId"],
-        animeId: animepaheData!["animeId"],
+        episodeID: widget.episodeList.firstWhere(
+            (element) => element["episode"] == currentEpisode)["session"],
+        animeId: widget.animeId,
       );
       setState(() {
         videoSources = response;
@@ -112,7 +88,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     int episode = 1,
     Duration duration = Duration.zero,
   }) {
-    double position = 100 * (episode - 1);
+    double position =
+        100 * ((episode - widget.episodeList[0]["episode"]) * 1.0);
     if (episode * 60 > 3000) {
       _controller.jumpTo(min(position, _controller.position.maxScrollExtent));
     }
@@ -154,13 +131,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       scrollToEpisode(episode: currentEpisode!);
     });
-    fetchEpisodeList();
+    getEpisode(
+      position: widget.position,
+      episode: widget.episode,
+    );
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    int currentLength = widget.gogoDetails.length;
+    int currentLength = widget.episodeList.length;
     final prefferedTitle =
         Provider.of<Watchlist>(context, listen: false).prefferedTitle;
     PrefferedTitle subtitle;
@@ -186,36 +166,31 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                             style: Theme.of(context).textTheme.displayLarge,
                           ),
                         )
-                      : animepaheData == null
-                          ? SpinKitRipple(
-                              color: Theme.of(context).colorScheme.primary)
-                          : isLoading == false && videoSources != null
-                              ? CustomPlayer(
-                                  streams: videoSources!,
-                                  callback: callback,
-                                  initialPosition:
-                                      currentEpisode == widget.episode
-                                          ? widget.position
-                                          : 0,
-                                  nextEpisode: () {
-                                    getEpisode(
-                                      episode: currentEpisode == currentLength
-                                          ? currentLength + 1
-                                          : currentEpisode! + 1,
-                                      position: 0,
-                                    );
-                                  },
-                                  isLast: currentEpisode == currentLength,
-                                )
-                              : Container(
-                                  color: Theme.of(context).colorScheme.surface,
-                                  child: Center(
-                                    child: SpinKitWave(
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                    ),
-                                  ),
+                      : isLoading == false && videoSources != null
+                          ? CustomPlayer(
+                              streams: videoSources!,
+                              callback: callback,
+                              initialPosition: currentEpisode == widget.episode
+                                  ? widget.position
+                                  : 0,
+                              nextEpisode: () {
+                                getEpisode(
+                                  episode: currentEpisode == currentLength
+                                      ? currentLength + 1
+                                      : currentEpisode! + 1,
+                                  position: 0,
+                                );
+                              },
+                              isLast: currentEpisode == currentLength,
+                            )
+                          : Container(
+                              color: Theme.of(context).colorScheme.surface,
+                              child: Center(
+                                child: SpinKitWave(
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
+                              ),
+                            ),
                 ),
                 Container(
                   padding: const EdgeInsets.all(8.0),
@@ -310,34 +285,35 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
               child: ListView.builder(
                 controller: _controller,
                 itemBuilder: (context, index) {
-                  final data = widget.gogoDetails[index];
+                  final data = widget.episodeList[index];
 
                   return InkWell(
                     onTap: () {
-                      if (data["number"] == currentEpisode) return;
+                      if (data["episode"] == currentEpisode) return;
                       getEpisode(
-                        episode: data["number"],
+                        episode: data["episode"],
                         position: 0,
                       );
                     },
                     child: Container(
-                      color: data["number"] == currentEpisode
+                      color: data["episode"] == currentEpisode
                           ? AppColors.grey
                           : null,
                       width: MediaQuery.of(context).size.width,
                       height: 100,
                       child: CustomTile(
-                        image: data["image"],
-                        episodeNumber: data["number"],
-                        airDate: data["airDate"],
-                        description: data["description"],
-                        key: ValueKey(data["number"]),
+                        duration: data["duration"],
+                        image: data["snapshot"],
+                        episodeNumber: data["episode"].toString(),
+                        airDate: data["created_at"],
+                        description: data["disc"],
+                        key: ValueKey(data["episode"]),
                         title: data["title"],
                       ),
                     ),
                   );
                 },
-                itemCount: widget.gogoDetails.length,
+                itemCount: widget.episodeList.length,
               ),
             )
           ],

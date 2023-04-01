@@ -26,8 +26,11 @@ class DetailsScreen extends StatefulWidget {
 class _DetailsScreenState extends State<DetailsScreen>
     with TickerProviderStateMixin {
   Map<String, dynamic>? fetchedData;
+  String? animeId;
+  List<dynamic>? episodeList;
   bool hasError = false;
   String? errorMessage;
+  bool loadingEpisode = false;
 
   late final AnimationController _animationController = AnimationController(
       vsync: this, duration: const Duration(milliseconds: 500))
@@ -36,6 +39,43 @@ class _DetailsScreenState extends State<DetailsScreen>
     parent: _animationController,
     curve: Curves.easeInCubic,
   );
+
+  void fetchEpisodeList() async {
+    try {
+      List<dynamic> tempList = [];
+      int nextPage = 1;
+      setState(() {
+        loadingEpisode = true;
+      });
+      while (nextPage != -1) {
+        final result = await HttpHelper.getEpisodeList(
+          title: fetchedData!["title"]["romaji"] ?? "Unknown",
+          releasedYear: fetchedData?["releaseDate"] ?? 0,
+          page: nextPage,
+        );
+        if (animeId == null) {
+          setState(() {
+            animeId = result["animeId"];
+          });
+        }
+        tempList = [...tempList, ...result["episodes"]["data"]];
+        nextPage = result["episodes"]["current_page"] ==
+                result["episodes"]["last_page"]
+            ? -1
+            : result["episodes"]["current_page"] + 1;
+        setState(() {
+          episodeList = tempList;
+        });
+      }
+      setState(() {
+        loadingEpisode = false;
+      });
+    } catch (err) {
+      setState(() {
+        hasError = true;
+      });
+    }
+  }
 
   void getData() async {
     try {
@@ -51,6 +91,7 @@ class _DetailsScreenState extends State<DetailsScreen>
       setState(() {
         fetchedData = result;
       });
+      if (episodeList == null) fetchEpisodeList();
     } catch (err) {
       setState(() {
         hasError = true;
@@ -168,7 +209,7 @@ class _DetailsScreenState extends State<DetailsScreen>
                       Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Text(
-                          errorMessage!,
+                          errorMessage ?? "Error",
                           style: Theme.of(context).textTheme.displayLarge,
                           textAlign: TextAlign.center,
                         ),
@@ -201,27 +242,22 @@ class _DetailsScreenState extends State<DetailsScreen>
                             size: 50,
                           ),
                         ),
-                      if (fetchedData != null) ...[
+                      if (episodeList != null) ...[
                         ElevatedButton(
-                          onPressed: fetchedData!["episodes"].length == 0
+                          onPressed: episodeList!.isEmpty
                               ? null
                               : () {
-                                  final data = fetchedData!["episodes"][0];
+                                  final data = episodeList![0];
                                   Navigator.of(context).push(
                                     CustomRoute(
                                       builder: (context) {
                                         return VideoPlayerScreen(
-                                          season: fetchedData!["season"]
-                                              ?.toString()
-                                              .trim()
-                                              .toLowerCase(),
-                                          releasedYear:
-                                              fetchedData!["releaseDate"],
+                                          animeId: animeId ?? "",
                                           title: fetchedData!["title"],
-                                          gogoDetails: fetchedData!["episodes"],
+                                          episodeList: episodeList!,
                                           episode: index != -1
                                               ? history[index]["episode"]
-                                              : data["number"],
+                                              : data["episode"],
                                           image: fetchedData!["image"],
                                           id: fetchedData!["id"],
                                           position: index != -1
@@ -299,24 +335,19 @@ class _DetailsScreenState extends State<DetailsScreen>
                     ],
                   ),
                 ),
-          if (fetchedData != null)
+          if (episodeList != null)
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  // final data = episodeList!["episodes"][index];
-                  final data = fetchedData!["episodes"][index];
+                  final data = episodeList![index];
                   return InkWell(
                     onTap: () => Navigator.of(context).push(
                       CustomRoute(
                         builder: (context) => VideoPlayerScreen(
-                          season: fetchedData!["season"]
-                              ?.toString()
-                              .trim()
-                              .toLowerCase(),
-                          releasedYear: fetchedData!["releaseDate"],
                           title: fetchedData!["title"],
-                          gogoDetails: fetchedData!["episodes"],
-                          episode: data["number"],
+                          episodeList: episodeList!,
+                          animeId: animeId ?? "",
+                          episode: data["episode"],
                           image: fetchedData!["image"],
                           id: fetchedData!["id"],
                         ),
@@ -326,17 +357,24 @@ class _DetailsScreenState extends State<DetailsScreen>
                       width: MediaQuery.of(context).size.width,
                       height: 100,
                       child: CustomTile(
-                        image: data["image"],
-                        episodeNumber: data["number"],
-                        airDate: data["airDate"],
-                        description: data["description"],
-                        key: ValueKey(data["number"]),
+                        image: data["snapshot"],
+                        episodeNumber: data["episode"].toString(),
+                        airDate: data["created_at"],
+                        description: data["disc"],
+                        duration: data["duration"],
+                        key: ValueKey(data["episode"]),
                         title: data["title"],
                       ),
                     ),
                   );
                 },
-                childCount: fetchedData!["episodes"].length,
+                childCount: episodeList?.length ?? 0,
+              ),
+            ),
+          if (loadingEpisode)
+            SliverToBoxAdapter(
+              child: SpinKitFadingFour(
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
           if (fetchedData != null) ...[

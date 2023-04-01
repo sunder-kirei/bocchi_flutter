@@ -50,21 +50,18 @@ class AnimeScrapper {
       }
       return foundAnime["animeId"];
     } catch (err) {
-      print(err);
-      throw err;
+      rethrow;
     }
   }
 
-  static Future<List<Map<String, dynamic>>> fetchAnimepaheEpisodes({
+  static Future<Map<String, dynamic>> fetchAnimepaheEpisodes({
     required String animeId,
     required int page,
   }) async {
     if (animeId == "") {
-      return [
-        {
-          "error": "No anime found",
-        }
-      ];
+      return {
+        "error": "No anime found",
+      };
     }
 
     final url = Uri.https(_baseUrl, "/api", {
@@ -74,18 +71,19 @@ class AnimeScrapper {
       "page": page.toString(),
     });
     final response = await get(url);
-    final responseBody = json.decode(response.body)["data"] as List<dynamic>;
-    final episodeList = responseBody.map((ep) {
-      return {
-        "epNum": ep["episode"],
-        "episodeId": ep["session"],
-        "thumbnail": ep["snapshot"],
-        "duration": ep["duration"],
-        "isBD": ep["disc"] == "BD" ? true : false,
-      };
-    }).toList();
+    return json.decode(response.body);
+    // final responseBody = json.decode(response.body)["data"] as List<dynamic>;
+    // final episodeList = responseBody.map((ep) {
+    //   return {
+    //     "epNum": ep["episode"],
+    //     "episodeId": ep["session"],
+    //     "thumbnail": ep["snapshot"],
+    //     "duration": ep["duration"],
+    //     "isBD": ep["disc"] == "BD" ? true : false,
+    //   };
+    // }).toList();
 
-    return episodeList;
+    // return episodeList;
   }
 
   static Future<List<Map<String, String>>> fetchAnimepaheEpisodesSources({
@@ -137,7 +135,7 @@ class AnimeScrapper {
       }
       return sourceList ?? [{}];
     } catch (err) {
-      throw err;
+      rethrow;
     }
   }
 }

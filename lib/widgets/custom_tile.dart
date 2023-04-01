@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 class CustomTile extends StatelessWidget {
   final String image;
   final String? airDate;
-  final int episodeNumber;
+  final String episodeNumber;
   final String? title;
   final String? description;
+  final String? duration;
   const CustomTile({
     super.key,
     required this.image,
@@ -14,6 +15,7 @@ class CustomTile extends StatelessWidget {
     required this.episodeNumber,
     this.title,
     this.description,
+    this.duration,
   });
 
   @override
@@ -39,7 +41,7 @@ class CustomTile extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 airDate == null
@@ -59,28 +61,25 @@ class CustomTile extends StatelessWidget {
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
                       ),
-                title != null
-                    ? Text(
-                        title!,
-                        style:
-                            Theme.of(context).textTheme.displayLarge?.copyWith(
-                                  fontSize: 13,
-                                ),
-                        maxLines: 2,
-                      )
-                    : const Text(
-                        "\n",
+                Text(
+                  title ?? "",
+                  style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                        fontSize: 13,
                       ),
-                description != null
-                    ? Text(
-                        description!,
-                        maxLines: 2,
-                        style: Theme.of(context).textTheme.titleMedium,
-                        overflow: TextOverflow.ellipsis,
-                      )
-                    : const Text(
-                        "\n",
-                      ),
+                  maxLines: 2,
+                ),
+                Text(
+                  description ?? "",
+                  maxLines: 2,
+                  style: Theme.of(context).textTheme.titleMedium,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  duration ?? "",
+                  maxLines: 2,
+                  style: Theme.of(context).textTheme.titleMedium,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
           ),
