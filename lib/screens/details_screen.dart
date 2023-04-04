@@ -31,6 +31,7 @@ class _DetailsScreenState extends State<DetailsScreen>
   bool hasError = false;
   String? errorMessage;
   bool loadingEpisode = false;
+  bool descending = false;
 
   late final AnimationController _animationController = AnimationController(
       vsync: this, duration: const Duration(milliseconds: 500))
@@ -63,12 +64,10 @@ class _DetailsScreenState extends State<DetailsScreen>
                 result["episodes"]["last_page"]
             ? -1
             : result["episodes"]["current_page"] + 1;
-        setState(() {
-          episodeList = tempList;
-        });
       }
       setState(() {
         loadingEpisode = false;
+        episodeList = tempList;
       });
     } catch (err) {
       setState(() {
@@ -209,7 +208,7 @@ class _DetailsScreenState extends State<DetailsScreen>
                       Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Text(
-                          errorMessage ?? "Error",
+                          errorMessage ?? "Some unknown error occured.",
                           style: Theme.of(context).textTheme.displayLarge,
                           textAlign: TextAlign.center,
                         ),
@@ -315,22 +314,40 @@ class _DetailsScreenState extends State<DetailsScreen>
                         const SizedBox(
                           height: 10,
                         ),
-                        if (fetchedData!["totalEpisodes"] > 0)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0,
-                              vertical: 10,
-                            ),
-                            child: Text(
-                              "Episodes",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .displayLarge
-                                  ?.copyWith(
-                                    fontSize: 24,
+                        if (fetchedData?["totalEpisodes"] != null)
+                          if (fetchedData?["totalEpisodes"] > 0)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0,
+                                vertical: 10,
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Episodes",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .displayLarge
+                                        ?.copyWith(
+                                          fontSize: 24,
+                                        ),
                                   ),
+                                  TextButton.icon(
+                                    onPressed: () {
+                                      setState(() {
+                                        descending = !descending;
+                                      });
+                                    },
+                                    icon: descending
+                                        ? Icon(Icons.arrow_upward_rounded)
+                                        : Icon(Icons.arrow_downward_rounded),
+                                    label: Text("Sort"),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
                       ],
                     ],
                   ),
@@ -339,7 +356,9 @@ class _DetailsScreenState extends State<DetailsScreen>
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  final data = episodeList![index];
+                  final data = descending
+                      ? episodeList![episodeList!.length - 1 - index]
+                      : episodeList![index];
                   return InkWell(
                     onTap: () => Navigator.of(context).push(
                       CustomRoute(
@@ -371,7 +390,7 @@ class _DetailsScreenState extends State<DetailsScreen>
                 childCount: episodeList?.length ?? 0,
               ),
             ),
-          if (loadingEpisode)
+          if (loadingEpisode && !hasError)
             SliverToBoxAdapter(
               child: SpinKitFadingFour(
                 color: Theme.of(context).colorScheme.primary,

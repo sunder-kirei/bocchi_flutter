@@ -1,5 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
+import 'package:intl/intl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class CustomTile extends StatelessWidget {
   final String image;
@@ -20,6 +22,7 @@ class CustomTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final date = DateTime.parse(airDate ?? '');
     return Flex(
       key: key,
       direction: Axis.horizontal,
@@ -44,29 +47,12 @@ class CustomTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                airDate == null
-                    ? Text(
-                        "Episode $episodeNumber",
-                        style:
-                            Theme.of(context).textTheme.displayLarge?.copyWith(
-                                  fontSize: 11,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                      )
-                    : Text(
-                        "E$episodeNumber \u2022 ${airDate!.substring(0, 10)}",
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontSize: 11,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                      ),
                 Text(
-                  title ?? "",
+                  "Episode $episodeNumber",
                   style: Theme.of(context).textTheme.displayLarge?.copyWith(
                         fontSize: 13,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
-                  maxLines: 2,
                 ),
                 Text(
                   description ?? "",
@@ -75,7 +61,7 @@ class CustomTile extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
-                  duration ?? "",
+                  DateFormat.yMMMd("en_US").format(date),
                   maxLines: 2,
                   style: Theme.of(context).textTheme.titleMedium,
                   overflow: TextOverflow.ellipsis,
